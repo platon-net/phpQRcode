@@ -4,9 +4,14 @@ READ ME
 This is PHP implementation of QR Code 2-D barcode generator. It is pure-php
 LGPL-licensed implementation based on C libqrencode by Kentaro Fukuchi.
 
+At 2025-02-21 was cloned from https://sourceforge.net/projects/phpqrcode/
+to Platon Technologies public GIT repositary.
+
 ## LICENSING ##
 
 Copyright (C) 2010-2013 by Dominik Dzienia 
+
+Copyright (C) 2025 by Platon Technologies
 
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -29,11 +34,11 @@ Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 ## CONTACT ##
 
-Fell free to contact me via e-mail (deltalab at poczta dot fm) or using
-folowing project pages:
+Fell free to contact me via e-mail (devel at platon dot sk) or using
+folowing web pages:
 
- * http://sourceforge.net/projects/phpqrcode/
- * http://phpqrcode.sourceforge.net/
+ * EN: https://platon.net
+ * SK: https://platon.sk
   
 ## ACKNOWLEDGMENTS ##
 
