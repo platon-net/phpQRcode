@@ -43,6 +43,7 @@
         "007"=>"Configuring pixel size",
         "008"=>"Configuring frame size",
         "010"=>"Using merged lib version",
+        "011"=>"Using inline as PNG in Base64",
         //------------------------------------
         "020"=>"Content - Phone Number",
         "021"=>"Content - SMS App",

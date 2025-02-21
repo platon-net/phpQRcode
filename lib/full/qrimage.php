@@ -21,20 +21,20 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
- 
+
     define('QR_IMAGE', true);
 
 
     /** @defgroup OutputGroup Standard API Output
     Provide simple Raster & Vector output */
-     
+
     /** @addtogroup OutputGroup */
     /** @{ */
-    
+
     /** Image rendering helper.
     Uses GD2 image to render QR Code into image file */
     class QRimage {
-    
+
         //----------------------------------------------------------------------
         /**
         Creates PNG image.
@@ -44,11 +44,11 @@
         @param Integer $outerFrame (optional) code margin (silent zone) in 'virtual'  pixels
         @param Boolean $saveandprint (optional) if __true__ code is outputed to browser and saved to file, otherwise only saved to file. It is effective only if $outfile is specified.
         */
-        
-        public static function png($frame, $filename = false, $pixelPerPoint = 4, $outerFrame = 4,$saveandprint=FALSE) 
+
+        public static function png($frame, $filename = false, $pixelPerPoint = 4, $outerFrame = 4,$saveandprint=FALSE)
         {
             $image = self::image($frame, $pixelPerPoint, $outerFrame);
-            
+
             if ($filename === false) {
                 Header("Content-type: image/png");
                 ImagePng($image);
@@ -61,10 +61,32 @@
                     ImagePng($image, $filename);
                 }
             }
-            
+
             ImageDestroy($image);
         }
-    
+
+		//-------------------------------------------------------------------
+		/**
+        Creates a base64-encoded PNG image.
+        @param Array $frame frame containing code
+        @param Integer $pixelPerPoint (optional) pixel size, multiplier for each 'virtual' pixel
+        @param Integer $outerFrame (optional) code margin (silent zone) in 'virtual'  pixels
+        @return String base64-encoded PNG image
+        */
+
+		public static function pngBase64($frame, $pixelPerPoint = 4, $outerFrame = 4)
+		{
+			$image = self::image($frame, $pixelPerPoint, $outerFrame);
+			$stream = fopen('php://memory', 'r+');
+			imagepng($image, $stream);
+			rewind($stream);
+			$data = stream_get_contents($stream);
+			$base64 = 'data:image/png;base64,' . base64_encode($data);
+			imagedestroy($image);
+			fclose($stream);
+			return $base64;
+		}
+
         //----------------------------------------------------------------------
         /**
         Creates JPEG image.
@@ -74,21 +96,21 @@
         @param Integer $outerFrame (optional) code margin (silent zone) in 'virtual'  pixels
         @param Integer $q (optional) JPEG compression level (__0__ .. __100__)
         */
-        
-        public static function jpg($frame, $filename = false, $pixelPerPoint = 8, $outerFrame = 4, $q = 85) 
+
+        public static function jpg($frame, $filename = false, $pixelPerPoint = 8, $outerFrame = 4, $q = 85)
         {
             $image = self::image($frame, $pixelPerPoint, $outerFrame);
-            
+
             if ($filename === false) {
                 Header("Content-type: image/jpeg");
                 ImageJpeg($image, null, $q);
             } else {
-                ImageJpeg($image, $filename, $q);            
+                ImageJpeg($image, $filename, $q);
             }
-            
+
             ImageDestroy($image);
         }
-    
+
         //----------------------------------------------------------------------
         /**
         Creates generic GD2 image object
@@ -97,16 +119,16 @@
         @param Integer $outerFrame (optional) code margin (silent zone) in 'virtual'  pixels
         @return __Resource__ GD2 image resource (remember to ImageDestroy it!)
         */
-        public static function image($frame, $pixelPerPoint = 4, $outerFrame = 4) 
+        public static function image($frame, $pixelPerPoint = 4, $outerFrame = 4)
         {
             $h = count($frame);
             $w = strlen($frame[0]);
-            
+
             $imgW = $w + 2*$outerFrame;
             $imgH = $h + 2*$outerFrame;
-            
+
             $base_image =ImageCreate($imgW, $imgH);
-            
+
             $col[0] = ImageColorAllocate($base_image,255,255,255);
             $col[1] = ImageColorAllocate($base_image,0,0,0);
 
@@ -115,17 +137,17 @@
             for($y=0; $y<$h; $y++) {
                 for($x=0; $x<$w; $x++) {
                     if ($frame[$y][$x] == '1') {
-                        ImageSetPixel($base_image,$x+$outerFrame,$y+$outerFrame,$col[1]); 
+                        ImageSetPixel($base_image,$x+$outerFrame,$y+$outerFrame,$col[1]);
                     }
                 }
             }
-            
+
             $target_image =ImageCreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
             ImageCopyResized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
             ImageDestroy($base_image);
-            
+
             return $target_image;
         }
     }
-    
+
     /** @} */
