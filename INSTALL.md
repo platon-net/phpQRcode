@@ -3,19 +3,35 @@ INSTALATION
 
 ## REQUIREMENTS ##
 
- * PHP5
+ * PHP5, tested on PHP/8.2
  * PHP GD2 extension with JPEG and PNG support
- 
+
 ## INSTALLATION ##
 
 If you want to recreate cache by yourself make sure cache directory is
 writable and you have permisions to write into it. Also make sure you are
 able to read files in it if you have cache option enabled
- 
+
 ## CONFIGURATION ##
 
 Feel free to modify config constants in qrconfig.php file. Read about it in
 provided comments and project wiki page (links in README file)
+
+## QUICK START WITH ONE-FILE ##
+
+All required files is merged into one-file located at `lib/merged/phpqrcode.php`
+
+	<?php
+
+	require_once 'phpqrcode.php';
+
+	$str = 'PHP QR Code :)';
+	$png_base64 = QRcode::pngBase64($str, 4, 5);
+
+	?>
+
+	<img src="<?php echo $png_base64; ?>">
+
 
 ## QUICK START ##
 
@@ -28,7 +44,7 @@ Notice: probably you should'nt use all of this in same script :)
 
 	//write code into file, Error corection lecer is lowest, L (one form: L,M,Q,H)
 	//each code square will be 4x4 pixels (4x zoom)
-	//code will have 2 code squares white boundary around 
+	//code will have 2 code squares white boundary around
 
 	QRcode::png('PHP QR Code :)', 'test.png', 'L', 4, 2);
 
@@ -54,7 +70,7 @@ Notice: probably you should'nt use all of this in same script :)
 
 Inside bindings/tcpdf you will find slightly modified 2dbarcodes.php.
 Instal phpqrcode liblaty inside tcpdf folder, then overwrite (or merge)
-2dbarcodes.php 
+2dbarcodes.php
 
 Then use similar as example #50 from TCPDF examples:
 
