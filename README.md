@@ -32,7 +32,7 @@ Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
  * INSTALL.md file
  * http://sourceforge.net/apps/mediawiki/phpqrcode/index.php?title=Main_Page
- * docs/html/index.html
+ * docs/html/index.html OR online available https://platon-net.github.io/phpQRcode/html/index.html
 
 ## CONTACT ##
 
