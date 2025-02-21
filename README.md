@@ -7,9 +7,11 @@ LGPL-licensed implementation based on C libqrencode by Kentaro Fukuchi.
 At 2025-02-21 was cloned from https://sourceforge.net/projects/phpqrcode/
 to Platon Technologies public GIT repositary.
 
+Current repository is https://github.com/platon-net/phpQRcode
+
 ## LICENSING ##
 
-Copyright (C) 2010-2013 by Dominik Dzienia 
+Copyright (C) 2010-2013 by Dominik Dzienia
 
 Copyright (C) 2025 by Platon Technologies
 
@@ -39,10 +41,10 @@ folowing web pages:
 
  * EN: https://platon.net
  * SK: https://platon.sk
-  
+
 ## ACKNOWLEDGMENTS ##
 
-Based on C libqrencode library (ver. 3.1.1) 
+Based on C libqrencode library (ver. 3.1.1)
 Copyright (C) 2006-2010 by Kentaro Fukuchi
 http://megaui.net/fukuchi/works/qrencode/index.en.html
 
@@ -51,4 +53,3 @@ countries.
 
 Reed-Solomon code encoder is written by Phil Karn, KA9Q.
 Copyright (C) 2002, 2003, 2004, 2006 Phil Karn, KA9Q
- 
