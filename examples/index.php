@@ -2,30 +2,31 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style type="text/css">
     html, body, div { margin: 0; border: 0 none; padding: 0; }
     html, body, #wrapper, #left, #right { height: 100%; min-height: 100%; }
-    #wrapper { margin: 0 auto; oveflow: hidden; width: 960px;  }
-    #left { background: white; float: left; width: 260px; }
-    #right { background: white; margin-left: 260px;  }
+    #wrapper { margin: 0 auto; oveflow: hidden; width: 95%; min-width: 960px;  }
+    #left { background: white; float: left; width: 400px; }
+    #right { background: white; margin-left: 400px;  }
     #previewCnt { background: white; padding:1%; min-height: 300px;   }
     #codeCnt {  background:white; padding:1%; min-height: 300px; }
     .menu {  margin: 3%; background: white; border:1px solid silver; overflow:auto}
     .preview { background: white;  min-height: 300px;border:1px solid silver; }
     .codein { background: white;  min-height: 100%;border:1px solid silver; overflow:auto}
     .header { padding: 5px 8px; border-bottom: 1px solid silver; background: #0b3175; color: white; font-family: Arial, Verdana, Helvetica; font-weight: bold;}
-    .subheader { padding: 2px 8px; border-bottom: 1px solid silver; background: gray; color: white; font-family: Arial, Verdana, Helvetica; font-weight: bold;font-size:8pt;}
+    .subheader { padding: 2px 8px; border-bottom: 1px solid silver; background: gray; color: white; font-family: Arial, Verdana, Helvetica; font-weight: bold;font-size:16px;}
     .headernob {border-bottom: 0 }
     .cnt { padding: 8px; }
-    .item { border-top: 1px solid silver; padding: 3px; font-size: 0.8em; font-family: "Arial Narrow", Arial, Verdana;}
+    .item { border-top: 1px solid silver; padding: 3px; font-size: 14px; font-family: "Arial Narrow", Arial, Verdana;}
     .menu a { text-decoration: none; color: black; }
     .menu a:visited { text-decoration: none; color: gray; }
     .hi { background: #86c3ff;  }
     a .hi { color: black !important; }
-    .filename { float: right; color: white; font-weight: normal;font-size:0.7em;}
+    .filename { float: right; color: white; font-weight: normal;font-size:12px;}
     .filename a {color: white; text-decoration: none;}
     .filename a:visited {color: white;}
-    .cntsmaller { font-size:0.7em; }
+    .cntsmaller { font-size:14px; }
   </style>
 
   <title>PHP QR Code - Examples</title>
@@ -75,7 +76,7 @@
         //------------------------------------
         "800"=>"--- ToDo ---"
     );
-    
+
     $groups = array(
         "0"=>"Standard API Basics - Quick Start",
         "1"=>"Plugins API Basics - Quick Start",
@@ -84,8 +85,8 @@
         "7"=>"Standard API - Debug &amp; Custom Dev",
         "8"=>"Plugins API - Debug &amp; Custom Dev"
     );
-    
-    
+
+
     $groupList = array();
     foreach($groups as $key=>$val) {
         $groupList[$key] = array();
@@ -95,26 +96,26 @@
             }
         }
     }
-    
+
     $example = (int)$_GET['example'];
     if ($example < 0)
         $example = 1;
-    
+
     $example = substr('000'.$example, -3);
 
     $fileMappings = array();
     $foundFiles = glob('example_*.php');
-    
+
     foreach($foundFiles as $foundFile) {
         $foundFileName = basename($foundFile);
         $fileNameEx = explode('_', $foundFileName);
         $fileMappings[$fileNameEx[1]] = $foundFileName;
     }
-    
+
     if (!isset($fileMappings[$example])) {
         $example = '001';
     }
-    
+
     $exampleFile = $fileMappings[$example];
 
 ?>
