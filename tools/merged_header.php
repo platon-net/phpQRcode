@@ -12,11 +12,11 @@
  *
  * For full version, documentation, examples of use please visit:
  *
- *    http://phpqrcode.sourceforge.net/
- *    https://sourceforge.net/projects/phpqrcode/
+ *    https://github.com/platon-net/phpQRcode 
  *
  * PHP QR Code is distributed under LGPL 3
  * Copyright (C) 2010 Dominik Dzienia <deltalab at poczta dot fm>
+ * Copyright (C) 2025 Platon Technologies <devel at platon dot sk>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
