@@ -6,5 +6,6 @@ var searchData=
   ['size_3',['size',['../class_q_rbitstream.html#a3bed2132f1aec1d11473c284b7321cb3',1,'QRbitstream']]],
   ['standard_20api_20core_4',['Standard API Core',['../group___core_group.html',1,'']]],
   ['standard_20api_20output_5',['Standard API Output',['../group___output_group.html',1,'']]],
-  ['svg_6',['svg',['../class_q_rcode.html#a952a9d42bdd7cfa8249757d7a87d9e63',1,'QRcode']]]
+  ['structure_5fheader_5fbits_6',['STRUCTURE_HEADER_BITS',['../class_q_rconst.html#ae69c2eec040b9e6877b79ee3a43ea788',1,'QRconst']]],
+  ['svg_7',['svg',['../class_q_rcode.html#ab3d9c78b5ddb0605713398f5e9eb84c6',1,'QRcode']]]
 ];

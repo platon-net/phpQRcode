@@ -75,7 +75,7 @@ $(function() {
 <div class="textblock"><h1><a class="anchor" id="autotoc_md8"></a>
 REQUIREMENTS</h1>
 <ul>
-<li>PHP5</li>
+<li>PHP5, tested on PHP/8.2</li>
 <li>PHP GD2 extension with JPEG and PNG support</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md9"></a>
@@ -85,6 +85,18 @@ INSTALLATION</h1>
 CONFIGURATION</h1>
 <p>Feel free to modify config constants in qrconfig.php file. Read about it in provided comments and project wiki page (links in README file)</p>
 <h1><a class="anchor" id="autotoc_md11"></a>
+QUICK START WITH ONE-FILE</h1>
+<p>All required files is merged into one-file located at <code>lib/merged/phpqrcode.php</code> </p><pre class="fragment">&lt;?php
+
+require_once 'phpqrcode.php';
+
+$str = 'PHP QR Code :)';
+$png_base64 = QRcode::pngBase64($str, 4, 5);
+
+?&gt;
+
+&lt;img src="&lt;?php echo $png_base64; ?&gt;"&gt;
+</pre><h1><a class="anchor" id="autotoc_md12"></a>
 QUICK START</h1>
 <p>Notice: probably you should'nt use all of this in same script :) </p><pre class="fragment">&lt;?php
 
@@ -93,7 +105,7 @@ include "qrlib.php"
 
 //write code into file, Error corection lecer is lowest, L (one form: L,M,Q,H)
 //each code square will be 4x4 pixels (4x zoom)
-//code will have 2 code squares white boundary around 
+//code will have 2 code squares white boundary around
 
 QRcode::png('PHP QR Code :)', 'test.png', 'L', 4, 2);
 
@@ -114,7 +126,7 @@ QRtools::buildCache();
 $qrenc = new QRencode();
 $tab = $qrenc-&gt;encode('PHP QR Code :)');
 QRspec::debug($tab, true);
-</pre> <h1><a class="anchor" id="autotoc_md12"></a>
+</pre> <h1><a class="anchor" id="autotoc_md13"></a>
 TCPDF INTEGRATION</h1>
 <p>Inside bindings/tcpdf you will find slightly modified 2dbarcodes.php. Instal phpqrcode liblaty inside tcpdf folder, then overwrite (or merge) 2dbarcodes.php</p>
 <p>Then use similar as example #50 from TCPDF examples: </p><pre class="fragment">&lt;?php
@@ -132,7 +144,7 @@ $pdf-&gt;write2DBarcode('PHP QR Code :)', 'QR,L', '', '', 30, 30, $style, 'N');
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Feb 21 2025 22:55:45 for PHP QrCode Library by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+Generated on Thu Mar 6 2025 14:47:15 for PHP QrCode Library by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
 </small></address>
 </body>
 </html>

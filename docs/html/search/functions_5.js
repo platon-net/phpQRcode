@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['factory_0',['factory',['../class_q_rencode.html#a0cfc99f865cb401ee5f3492004a3c3ff',1,'QRencode']]]
+  ['factory_0',['factory',['../class_q_rencode.html#a02d634f1b04dcbbe0074079c650cace9',1,'QRencode']]]
 ];
