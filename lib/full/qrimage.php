@@ -22,11 +22,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-if (!defined('QR_AREA')) {
-    define('QR_IMAGE', true);
-}
-
-
     /** @defgroup OutputGroup Standard API Output
     Provide simple Raster & Vector output */
 

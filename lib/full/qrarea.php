@@ -29,24 +29,7 @@
     //    W  E
     //     S
 
-if (!defined('QR_AREA')) {
-	define('QR_AREA', true);
 
-    define('QR_AREA_N', 0);
-    define('QR_AREA_E', 1);
-    define('QR_AREA_S', 2);
-    define('QR_AREA_W', 3);
-
-    define('QR_AREA_X', 0);
-    define('QR_AREA_Y', 1);
-
-    define('QR_AREA_TRACKER', 0);
-    define('QR_AREA_PATH',    1);
-    define('QR_AREA_POINT',   2);
-    define('QR_AREA_RECT',    3);
-    define('QR_AREA_LSHAPE',  4);
-
-}
     /** @addtogroup OutputGroup */
     /** @{ */
 
@@ -116,9 +99,9 @@ if (!defined('QR_AREA')) {
                 $py++;
             }
 
-            $this->paths[] = array(QR_AREA_TRACKER, 0,0);
-            $this->paths[] = array(QR_AREA_TRACKER, 0,($this->width-7));
-            $this->paths[] = array(QR_AREA_TRACKER, ($this->width-7),0);
+            $this->paths[] = array(QRconst::QR_AREA_TRACKER, 0,0);
+            $this->paths[] = array(QRconst::QR_AREA_TRACKER, 0,($this->width-7));
+            $this->paths[] = array(QRconst::QR_AREA_TRACKER, ($this->width-7),0);
 
             $this->groups = array();
             $this->curr_group = 1;
@@ -192,22 +175,22 @@ if (!defined('QR_AREA')) {
                 foreach($line as $item) {
 
                     $styles = 'border-top:';
-                    if ($item[QR_AREA_N])
+                    if ($item[QRconst::QR_AREA_N])
                             $styles .=  $style_on;
                     else    $styles .=  $style_off;
 
                     $styles .= 'border-bottom:';
-                    if ($item[QR_AREA_S])
+                    if ($item[QRconst::QR_AREA_S])
                             $styles .=  $style_on;
                     else    $styles .=  $style_off;
 
                     $styles .= 'border-right:';
-                    if ($item[QR_AREA_E])
+                    if ($item[QRconst::QR_AREA_E])
                             $styles .=  $style_on;
                     else    $styles .=  $style_off;
 
                     $styles .= 'border-left:';
-                    if ($item[QR_AREA_W])
+                    if ($item[QRconst::QR_AREA_W])
                             $styles .=  $style_on;
                     else    $styles .=  $style_off;
 
@@ -376,10 +359,10 @@ if (!defined('QR_AREA')) {
             $min_y = $this->width;
 
             foreach($group->points as $elem) {
-                $min_x = min($min_x, $elem[QR_AREA_X]);
-                $max_x = max($max_x, $elem[QR_AREA_X]);
-                $min_y = min($min_y, $elem[QR_AREA_Y]);
-                $max_y = max($max_y, $elem[QR_AREA_Y]);
+                $min_x = min($min_x, $elem[QRconst::QR_AREA_X]);
+                $max_x = max($max_x, $elem[QRconst::QR_AREA_X]);
+                $min_y = min($min_y, $elem[QRconst::QR_AREA_Y]);
+                $max_y = max($max_y, $elem[QRconst::QR_AREA_Y]);
             }
 
             return array($min_x, $min_y, $max_x+1, $max_y+1);
@@ -398,7 +381,7 @@ if (!defined('QR_AREA')) {
                     if ((!$group->vertical)||(!$group->horizontal)) {
 
                         $squareCoord = $this->detectSquare($group);
-                        array_unshift($squareCoord, QR_AREA_RECT);
+                        array_unshift($squareCoord, QRconst::QR_AREA_RECT);
 
                         $this->paths[] = $squareCoord;
 
@@ -410,7 +393,7 @@ if (!defined('QR_AREA')) {
                         foreach($group->paths as &$path)
                             self::rle($path[2]);
 
-                        $this->paths[] = array(QR_AREA_PATH, $group->paths);
+                        $this->paths[] = array(QRconst::QR_AREA_PATH, $group->paths);
                     }
                 } else if (($group->total == 3)&&($group->vertical)&&($group->horizontal)) {
                     $squareCoord = $this->detectSquare($group);
@@ -428,8 +411,8 @@ if (!defined('QR_AREA')) {
                     if ($this->getOnElem($squareCoord, 1, 1) != $group->id)
                         $variant = 3;
 
-                    $lshapes[] = $squareCoord[QR_AREA_X];
-                    $lshapes[] = $squareCoord[QR_AREA_Y];
+                    $lshapes[] = $squareCoord[QRconst::QR_AREA_X];
+                    $lshapes[] = $squareCoord[QRconst::QR_AREA_Y];
                     $lshapes[] = $variant;
 
                 } else if ($group->total >= 2) {
@@ -442,17 +425,17 @@ if (!defined('QR_AREA')) {
             }
 
             if (count($points) > 0) {
-                array_unshift($points, QR_AREA_POINT);
+                array_unshift($points, QRconst::QR_AREA_POINT);
                 $this->paths[] = $points;
             }
 
             if (count($squares) > 0) {
-                array_unshift($squares, QR_AREA_RECT);
+                array_unshift($squares, QRconst::QR_AREA_RECT);
                 $this->paths[] = $squares;
             }
 
             if (count($lshapes) > 0) {
-                array_unshift($lshapes, QR_AREA_LSHAPE);
+                array_unshift($lshapes, QRconst::QR_AREA_LSHAPE);
                 $this->paths[] = $lshapes;
             }
         }
@@ -460,7 +443,7 @@ if (!defined('QR_AREA')) {
         //----------------------------------------------------------------------
         private function reserveEdgeOnElem($elem, $edgeNo)
         {
-            $this->tab_edges[$elem[QR_AREA_Y]][$elem[QR_AREA_X]][$edgeNo] = true;
+            $this->tab_edges[$elem[QRconst::QR_AREA_Y]][$elem[QRconst::QR_AREA_X]][$edgeNo] = true;
         }
 
         //----------------------------------------------------------------------
@@ -474,16 +457,16 @@ if (!defined('QR_AREA')) {
         {
             foreach($group->points as $elem) {
                 if ($this->getOnElem($elem, -1, 0) == $group->id)
-                    $this->reserveEdgeOnElem($elem, QR_AREA_W);
+                    $this->reserveEdgeOnElem($elem, QRconst::QR_AREA_W);
 
                 if ($this->getOnElem($elem, +1, 0) == $group->id)
-                    $this->reserveEdgeOnElem($elem, QR_AREA_E);
+                    $this->reserveEdgeOnElem($elem, QRconst::QR_AREA_E);
 
                 if ($this->getOnElem($elem, 0, -1) == $group->id)
-                    $this->reserveEdgeOnElem($elem, QR_AREA_N);
+                    $this->reserveEdgeOnElem($elem, QRconst::QR_AREA_N);
 
                 if ($this->getOnElem($elem, 0, +1) == $group->id)
-                    $this->reserveEdgeOnElem($elem, QR_AREA_S);
+                    $this->reserveEdgeOnElem($elem, QRconst::QR_AREA_S);
             }
         }
 
@@ -493,23 +476,23 @@ if (!defined('QR_AREA')) {
             $this->markAdjacentEdges($group);
 
             $elem = $group->points[0];
-            $waylist = $this->findPath($group, $elem[QR_AREA_X], $elem[QR_AREA_Y]);
-            $group->paths[] = array($elem[QR_AREA_X], $elem[QR_AREA_Y], $waylist);
+            $waylist = $this->findPath($group, $elem[QRconst::QR_AREA_X], $elem[QRconst::QR_AREA_Y]);
+            $group->paths[] = array($elem[QRconst::QR_AREA_X], $elem[QRconst::QR_AREA_Y], $waylist);
 
             $tab = array();
             foreach($group->points as $elem) {
 
-                $edgeTab = $this->tab_edges[$elem[QR_AREA_Y]][$elem[QR_AREA_X]];
+                $edgeTab = $this->tab_edges[$elem[QRconst::QR_AREA_Y]][$elem[QRconst::QR_AREA_X]];
 
-                if (!(  $edgeTab[QR_AREA_N]
-                    &&  $edgeTab[QR_AREA_E]
-                    &&  $edgeTab[QR_AREA_S]
-                    &&  $edgeTab[QR_AREA_W])) {
+                if (!(  $edgeTab[QRconst::QR_AREA_N]
+                    &&  $edgeTab[QRconst::QR_AREA_E]
+                    &&  $edgeTab[QRconst::QR_AREA_S]
+                    &&  $edgeTab[QRconst::QR_AREA_W])) {
 
-                    if (!$edgeTab[QR_AREA_S]) {
+                    if (!$edgeTab[QRconst::QR_AREA_S]) {
 
-                        $waylistw = $this->findPath($group, $elem[QR_AREA_X], $elem[QR_AREA_Y]+1);
-                        $group->paths[] = array($elem[QR_AREA_X], $elem[QR_AREA_Y]+1, $waylistw);
+                        $waylistw = $this->findPath($group, $elem[QRconst::QR_AREA_X], $elem[QRconst::QR_AREA_Y]+1);
+                        $group->paths[] = array($elem[QRconst::QR_AREA_X], $elem[QRconst::QR_AREA_Y]+1, $waylistw);
                     }
                 }
             }
@@ -550,31 +533,31 @@ if (!defined('QR_AREA')) {
                 while ((count($move_expl) > 0)&&($have_way == false)) {
                     $way = array_shift($move_expl);
 
-                    if (($have_way==false)&&($way=='R')&&($this->tab_edges[$py][$px][QR_AREA_N]==false)) {
+                    if (($have_way==false)&&($way=='R')&&($this->tab_edges[$py][$px][QRconst::QR_AREA_N]==false)) {
                         $have_way = true;
                         $dir = $way;
-                        $this->reserveEdge($px, $py, QR_AREA_N);
+                        $this->reserveEdge($px, $py, QRconst::QR_AREA_N);
                         $px++;
                     }
 
-                    if (($have_way==false)&&($way=='B')&&($this->tab_edges[$py][$px-1][QR_AREA_E]==false)) {
+                    if (($have_way==false)&&($way=='B')&&($this->tab_edges[$py][$px-1][QRconst::QR_AREA_E]==false)) {
                         $have_way = true;
                         $dir = $way;
-                        $this->reserveEdge($px-1, $py, QR_AREA_E);
+                        $this->reserveEdge($px-1, $py, QRconst::QR_AREA_E);
                         $py++;
                     }
 
-                    if (($have_way==false)&&($way=='L')&&($this->tab_edges[$py-1][$px-1][QR_AREA_S]==false)) {
+                    if (($have_way==false)&&($way=='L')&&($this->tab_edges[$py-1][$px-1][QRconst::QR_AREA_S]==false)) {
                         $have_way = true;
                         $dir = $way;
-                        $this->reserveEdge($px-1, $py-1, QR_AREA_S);
+                        $this->reserveEdge($px-1, $py-1, QRconst::QR_AREA_S);
                         $px--;
                     }
 
-                    if (($have_way==false)&&($way=='T')&&($this->tab_edges[$py-1][$px][QR_AREA_W]==false)) {
+                    if (($have_way==false)&&($way=='T')&&($this->tab_edges[$py-1][$px][QRconst::QR_AREA_W]==false)) {
                         $have_way = true;
                         $dir = $way;
-                        $this->reserveEdge($px, $py-1, QR_AREA_W);
+                        $this->reserveEdge($px, $py-1, QRconst::QR_AREA_W);
                         $py--;
                     }
                 }

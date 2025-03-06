@@ -222,10 +222,10 @@
         */
         public function encodeMask(QRinput $input, $mask)
         {
-            if($input->getVersion() < 0 || $input->getVersion() > QRSPEC_VERSION_MAX) {
+            if($input->getVersion() < 0 || $input->getVersion() > QRconst::QRSPEC_VERSION_MAX) {
                 throw new Exception('wrong version');
             }
-            if($input->getErrorCorrectionLevel() > QR_ECLEVEL_H) {
+            if($input->getErrorCorrectionLevel() > QRconst::QR_ECLEVEL_H) {
                 throw new Exception('wrong level');
             }
 
@@ -272,10 +272,10 @@
             $maskObj = new QRmask();
             if($mask < 0) {
 
-                if (QR_FIND_BEST_MASK) {
+                if (QRconst::QR_FIND_BEST_MASK) {
                     $masked = $maskObj->mask($width, $frame, $input->getErrorCorrectionLevel());
                 } else {
-                    $masked = $maskObj->makeMask($width, $frame, (intval(QR_DEFAULT_MASK) % 8), $input->getErrorCorrectionLevel());
+                    $masked = $maskObj->makeMask($width, $frame, (intval(QRconst::QR_DEFAULT_MASK) % 8), $input->getErrorCorrectionLevel());
                 }
             } else {
                 $masked = $maskObj->makeMask($width, $frame, $mask, $input->getErrorCorrectionLevel());
@@ -325,7 +325,7 @@
             $input = new QRinput($version, $level);
             if($input == NULL) return NULL;
 
-            $ret = $input->append(QR_MODE_8, strlen($string), str_split($string));
+            $ret = $input->append(QRconst::QR_MODE_8, strlen($string), str_split($string));
             if($ret < 0) {
                 unset($input);
                 return NULL;
@@ -352,7 +352,7 @@
         public function encodeString($string, $version, $level, $hint, $casesensitive)
         {
 
-            if($hint != QR_MODE_8 && $hint != QR_MODE_KANJI) {
+            if($hint != QRconst::QR_MODE_8 && $hint != QRconst::QR_MODE_KANJI) {
                 throw new Exception('bad hint');
                 return NULL;
             }
@@ -380,7 +380,7 @@
         @param Boolean $saveandprint (optional) if __true__ code is outputed to browser and saved to file, otherwise only saved to file. It is effective only if $outfile is specified.
         */
 
-        public static function png($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint=false)
+        public static function png($text, $outfile = false, $level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint=false)
         {
             $enc = QRencode::factory($level, $size, $margin);
             return $enc->encodePNG($text, $outfile, $saveandprint=false);
@@ -396,7 +396,7 @@
         @param Integer $margin (optional) code margin (silent zone) in 'virtual'  pixels
         @return Base64 string containing QR-Code image in PNG format
         */
-		public static function pngBase64($text, $level = QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint = false)
+		public static function pngBase64($text, $level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint = false)
 		{
 			$enc = QRencode::factory($level, $size, $margin);
 			return $enc->encodePNGbase64($text, $saveandprint);
@@ -414,7 +414,7 @@
         @return Array containing line of code with 1 and 0 for every code line
         */
 
-        public static function text($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4)
+        public static function text($text, $outfile = false, $level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4)
         {
             $enc = QRencode::factory($level, $size, $margin);
             return $enc->encode($text, $outfile);
@@ -432,7 +432,7 @@
         @return Array containing Raw QR code
         */
 
-        public static function raw($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4)
+        public static function raw($text, $outfile = false, $level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4)
         {
             $enc = QRencode::factory($level, $size, $margin);
             return $enc->encodeRAW($text, $outfile);
@@ -452,7 +452,7 @@
         @return String containing JavaScript creating the code, Canvas element (when $elemId is __false__) and script tag with required lib (when $autoInclude is __true__ and not yet included)
         */
 
-        public static function canvas($text, $elemId = false, $level = QR_ECLEVEL_L, $width = false, $size = false, $margin = 4, $autoInclude = false)
+        public static function canvas($text, $elemId = false, $level = QRconst::QR_ECLEVEL_L, $width = false, $size = false, $margin = 4, $autoInclude = false)
         {
             $html = '';
             $extra = '';
@@ -512,7 +512,7 @@
         @return String containing SVG tag
         */
 
-        public static function svg($text, $elemId = false, $outFile = false, $level = QR_ECLEVEL_L, $width = false, $size = false, $margin = 4, $compress = false)
+        public static function svg($text, $elemId = false, $outFile = false, $level = QRconst::QR_ECLEVEL_L, $width = false, $size = false, $margin = 4, $compress = false)
         {
             $enc = QRencode::factory($level, 1, 0);
             $tab_src = $enc->encode($text, false);
@@ -678,8 +678,8 @@
 
         public $structured = 0;       ///< Structured QR codes. Not supported.
 
-        public $level = QR_ECLEVEL_L; ///< __Integer__ error correction level __QR_ECLEVEL_L__, __QR_ECLEVEL_M__, __QR_ECLEVEL_Q__ or __QR_ECLEVEL_H__
-        public $hint = QR_MODE_8;     ///< __Integer__ encoding hint, __QR_MODE_8__ or __QR_MODE_KANJI__, Because Kanji encoding is kind of 8 bit encoding we need to hint encoder to use Kanji mode explicite. (otherwise it may try to encode it as plain 8 bit stream)
+        public $level = QRconst::QR_ECLEVEL_L; ///< __Integer__ error correction level __QR_ECLEVEL_L__, __QR_ECLEVEL_M__, __QR_ECLEVEL_Q__ or __QR_ECLEVEL_H__
+        public $hint = QRconst::QR_MODE_8;     ///< __Integer__ encoding hint, __QR_MODE_8__ or __QR_MODE_KANJI__, Because Kanji encoding is kind of 8 bit encoding we need to hint encoder to use Kanji mode explicite. (otherwise it may try to encode it as plain 8 bit stream)
 
         //----------------------------------------------------------------------
         /** Encoder instances factory.
@@ -688,7 +688,7 @@
         @param Integer $margin margin (silent zone) size, in code pixels
         @return builded QRencode instance
         */
-        public static function factory($level = QR_ECLEVEL_L, $size = 3, $margin = 4)
+        public static function factory($level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4)
         {
             $enc = new QRencode();
             $enc->size = $size;
@@ -703,19 +703,19 @@
                     break;
                 case 'l':
                 case 'L':
-                        $enc->level = QR_ECLEVEL_L;
+                        $enc->level = QRconst::QR_ECLEVEL_L;
                     break;
                 case 'm':
                 case 'M':
-                        $enc->level = QR_ECLEVEL_M;
+                        $enc->level = QRconst::QR_ECLEVEL_M;
                     break;
                 case 'q':
                 case 'Q':
-                        $enc->level = QR_ECLEVEL_Q;
+                        $enc->level = QRconst::QR_ECLEVEL_Q;
                     break;
                 case 'h':
                 case 'H':
-                        $enc->level = QR_ECLEVEL_H;
+                        $enc->level = QRconst::QR_ECLEVEL_H;
                     break;
             }
 
@@ -785,7 +785,7 @@
                 if ($err != '')
                     QRtools::log($outfile, $err);
 
-                $maxSize = (int)(QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
+                $maxSize = (int)(QRconst::QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
 
                 QRimage::png($tab, $outfile, min(max(1, $this->size), $maxSize), $this->margin,$saveandprint);
 
@@ -811,7 +811,7 @@
 				ob_end_clean();
 				if ($err != '')
 					QRtools::log($intext, $err);
-				$maxSize = (int)(QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
+				$maxSize = (int)(QRconst::QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
 				return QRimage::pngBase64($tab, min(max(1, $this->size), $maxSize), $this->margin, $saveandprint);
 			} catch (Exception $e) {
 				QRtools::log($intext, $e->getMessage());

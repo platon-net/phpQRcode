@@ -37,9 +37,13 @@
 
 
 /*
- * Version: 1.11.0
- * Build: 2025-03-06 11:51:42
+ * Version: 1.12.0
+ * Build: 2025-03-06 14:40:05
  */
+
+
+
+namespace PlatonNET;
 
 
 
@@ -49,113 +53,170 @@
 
 
 
-namespace PlatonNET;
-
-/*
- * PHP QR Code encoder
- *
- * Common constants
- *
- * Based on libqrencode C library distributed under LGPL 2.1
- * Copyright (C) 2006, 2007, 2008, 2009 Kentaro Fukuchi <fukuchi@megaui.net>
- *
- * PHP QR Code is distributed under LGPL 3
- * Copyright (C) 2010-2013 Dominik Dzienia <deltalab at poczta dot fm>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- */
-
-// definitions
-if (!defined('QR_CONST')) {
-
-	/**
-	 * Indicate that definitions for this class are set
+class QRconst
+{
+	/* ----------------------------------------------------
+	 * qrconfig.php
 	 */
-	define('QR_CONST', true);
 
-    /** \defgroup QR_CONST Global Constants
-    Constant used globally for function arguments.
-    Make PHP calls a little bit more clear, in place of missing (in dynamicaly typed language) enum types.
-    * @{
-    */
+	public const QR_CACHEABLE = false;
 
-    /** @name QR-Code Encoding Modes */
-    /** @{ */
+	/** Cache dir path.
+	 __String__ Used when QR_CACHEABLE === true. Specifies absolute server path
+	for masks and format templates cache dir  */
+	public const QR_CACHE_DIR = __DIR__.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
 
-    /** null encoding, used when no encoding was speciffied yet */
-    define('QR_MODE_NUL', -1);
-    /** Numerical encoding, only numbers (0-9) */
-    define('QR_MODE_NUM', 0);
-    /** AlphaNumerical encoding, numbers (0-9) uppercase text (A-Z) and few special characters (space, $, %, *, +, -, ., /, :) */
-    define('QR_MODE_AN', 1);
-    /** 8-bit encoding, raw 8 bit encoding */
-    define('QR_MODE_8', 2);
-    /** Kanji encoding */
-    define('QR_MODE_KANJI', 3);
-    /** Structure, internal encoding for structure-related data */
-    define('QR_MODE_STRUCTURE', 4);
-    /**@}*/
+	/** Default error logs dir.
+	 __String__ Absolute server path for log directory. */
+	public const QR_LOG_DIR = __DIR__.DIRECTORY_SEPARATOR;
 
-    /** @name QR-Code Levels of Error Correction
+	/** If best mask is found.
+	 __Boolean__ Speciffies mask searching strategy:
+	- __true__ - estimates best mask (as QR-Code spec recomends by default) but may be extremally slow
+	- __false__ - check only one mask (specified by __QR_DEFAULT_MASK__), gives significant performance boost but (propably) results in worst quality codes
+	*/
+
+	/** Maximum allowed png image width (in pixels).
+	 __Integer__ Maximal width/height of generated raster image.
+	Tune to make sure GD and PHP can handle such big images.
+	*/
+	public const QR_PNG_MAXIMUM_SIZE = 1024;
+
+	/* ----------------------------------------------------
+	 * qrconst.php
+	 */
+	/** @name QR-Code Encoding Modes */
+	/** @{ */
+
+	/** null encoding, used when no encoding was speciffied yet */
+	public const QR_MODE_NUL = -1;
+	/** Numerical encoding, only numbers (0-9) */
+	public const QR_MODE_NUM = 0;
+	/** AlphaNumerical encoding, numbers (0-9) uppercase text (A-Z) and few special characters (space, $, %, *, +, -, ., /, :) */
+	public const QR_MODE_AN = 1;
+	/** 8-bit encoding, raw 8 bit encoding */
+	public const QR_MODE_8 = 2;
+	/** Kanji encoding */
+	public const QR_MODE_KANJI = 3;
+	/** Structure, internal encoding for structure-related data */
+	public const QR_MODE_STRUCTURE = 4;
+	/**@}*/
+
+	/** @name QR-Code Levels of Error Correction
     Constants speciffy ECC level from lowest __L__ to the highest __H__.
     Higher levels are recomended for Outdoor-presented codes, but generates bigger codes.
-    */
-    /** @{*/
+	 */
+	/** @{*/
 	/** ~7% of codewords can be restored */
-    define('QR_ECLEVEL_L', 0);
+	public const QR_ECLEVEL_L = 0;
 	/** ~15% of codewords can be restored */
-    define('QR_ECLEVEL_M', 1);
+	public const QR_ECLEVEL_M = 1;
 	/** ~25% of codewords can be restored */
-    define('QR_ECLEVEL_Q', 2);
+	public const QR_ECLEVEL_Q = 2;
 	/** ~30% of codewords can be restored */
-    define('QR_ECLEVEL_H', 3);
-    /** @}*/
+	public const QR_ECLEVEL_H = 3;
+	/** @}*/
 
-    /** @name QR-Code Supported output formats */
-    /** @{*/
-    define('QR_FORMAT_TEXT', 0);
-    define('QR_FORMAT_PNG',  1);
-    /** @}*/
+	/** @name QR-Code Supported output formats */
+	/** @{*/
+	public const QR_FORMAT_TEXT = 0;
+	public const QR_FORMAT_PNG = 1;
+	/** @}*/
 
-    /** @}*/
+	/** @name Legacy Encoding modes (characters which can be encoded in QRcode) */
+	/** @{*/
+	/** Encoding mode */
+	public const QR_MODE_NL = -1;
+	/** Encoding mode numeric (0-9). 3 characters are encoded to 10bit length. In theory, 7089 characters or less can be stored in a QRcode. */
+	public const QR_MODE_NM = 0;
+	/** Encoding mode alphanumeric (0-9A-Z $%*+-./:) 45characters. 2 characters are encoded to 11bit length. In theory, 4296 characters or less can be stored in a QRcode. */
+	//public const QR_MODE_AN = 1; duplicate
+	/** Encoding mode 8bit byte data. In theory, 2953 characters or less can be stored in a QRcode. */
+	public const QR_MODE_8B = 2;
+	/** Encoding mode KANJI. A KANJI character (multibyte character) is encoded to 13bit length. In theory, 1817 characters or less can be stored in a QRcode. */
+	public const QR_MODE_KJ = 3;
+	/** Encoding mode STRUCTURED (currently unsupported) */
+	public const QR_MODE_ST = 4;
+	/** @}*/
+
+	/** @name Version information */
+	/** @{*/
+	/** Maximum QR Code version. */
+	public const QRSPEC_VERSION_MAX = 40;
+	/** Maximum matrix size for maximum version (version 40 is 177*177 matrix). */
+	public const QRSPEC_WIDTH_MAX = 177;
+	/** @}*/
+
+	/** @name Matrix indices for capacity array */
+	/** @{*/
+	/** Matrix index to get width from $capacity array. */
+	public const QRCAP_WIDTH = 0;
+	/** Matrix index to get number of words from $capacity array. */
+	public const QRCAP_WORDS = 1;
+	/** Matrix index to get remainder from $capacity array. */
+	public const QRCAP_REMINDER = 2;
+	/** Matrix index to get error correction level from $capacity array. */
+	public const QRCAP_EC = 3;
+	/** @}*/
+
+	/** @name Structure constants */
+	/** @{*/
+	/** Number of header bits for structured mode */
+	public const STRUCTURE_HEADER_BITS = 20;
+	/** Max number of symbols for structured mode */
+	public const MAX_STRUCTURED_SYMBOLS = 16;
+	/** @}*/
+
+	/** @name Mask pattern evaluation constants */
+	/** @{*/
+	/** Down point base value for case 1 mask pattern (concatenation of same color in a line or a column) */
+	public const N1 = 3;
+	/** Down point base value for case 2 mask pattern (module block of same color) */
+	public const N2 = 3;
+	/** Down point base value for case 3 mask pattern (1:1:3:1:1(dark:bright:dark:bright:dark)pattern in a line or a column) */
+	public const N3 = 40;
+	/** Down point base value for case 4 mask pattern (ration of dark modules in whole) */
+	public const N4 = 10;
+	/** @}*/
+
+	/** @name Optimization settings */
+	/** @{*/
+	/** if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code */
+	public const QR_FIND_BEST_MASK = true;
+	/** if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly */
+	public const QR_FIND_FROM_RANDOM = 2;
+	/** when QR_FIND_BEST_MASK === false */
+	public const QR_DEFAULT_MASK = 2;
+	/** @}*/
+
+	/* ----------------------------------------------------
+	* qrarea.php
+	*/
+	public const QR_AREA = true;
+
+	//      N
+	//    W  E
+	//     S
+	public const QR_AREA_N = 0;
+	public const QR_AREA_E = 1;
+	public const QR_AREA_S = 2;
+	public const QR_AREA_W = 3;
+
+	public const QR_AREA_X = 0;
+	public const QR_AREA_Y = 1;
+
+	public const QR_AREA_TRACKER = 0;
+	public const QR_AREA_PATH = 1;
+	public const QR_AREA_POINT = 2;
+	public const QR_AREA_RECT = 3;
+	public const QR_AREA_LSHAPE = 4;
+
+	/* ----------------------------------------------------
+	 * qrtools.php
+	 */
+	public const QR_IMAGE = true;
 }
 
-
-
-
-//---- merged_config.php -----------------------------
-
-
-
-
-/*
- * PHP QR Code encoder
- *
- * Config file, tuned-up for merged verion
- */
-     
-    define('QR_CACHEABLE', false);       // use cache - more disk reads but less CPU power, masks and format templates are stored there
-    define('QR_CACHE_DIR', false);       // used when QR_CACHEABLE === true
-    define('QR_LOG_DIR', false);         // default error logs dir   
-    
-    define('QR_FIND_BEST_MASK', true);                                                          // if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
-    define('QR_FIND_FROM_RANDOM', 2);                                                       // if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly
-    define('QR_DEFAULT_MASK', 2);                                                               // when QR_FIND_BEST_MASK === false
-                                                  
-    define('QR_PNG_MAXIMUM_SIZE',  1024);                                                       // maximum allowed png image width (in pixels), tune to make sure GD and PHP can handle such big images
-                                                  
 
 
 
@@ -189,101 +250,101 @@ if (!defined('QR_CONST')) {
 
 	/** @addtogroup CoreGroup */
 	/** @{ */
-	
+
 	/** Helper class */
     class QRtools {
-    
+
 		public static $timeBenchmarkStarted = false;
-	
+
         //----------------------------------------------------------------------
         public static function binarize($frame)
         {
             $len = count($frame);
             foreach ($frame as &$frameLine) {
-                
+
                 for($i=0; $i<$len; $i++) {
                     $frameLine[$i] = (ord($frameLine[$i])&1)?'1':'0';
                 }
             }
-            
+
             return $frame;
         }
-        
+
         //----------------------------------------------------------------------
         public static function tcpdfBarcodeArray($code, $mode = 'QR,L', $tcPdfVersion = '4.5.037')
         {
             $barcode_array = array();
-            
+
             if (!is_array($mode))
                 $mode = explode(',', $mode);
-                
+
             $eccLevel = 'L';
-                
+
             if (count($mode) > 1) {
                 $eccLevel = $mode[1];
             }
-                
+
             $qrTab = QRcode::text($code, false, $eccLevel);
             $size = count($qrTab);
-                
+
             $barcode_array['num_rows'] = $size;
             $barcode_array['num_cols'] = $size;
             $barcode_array['bcode'] = array();
-                
+
             foreach ($qrTab as $line) {
                 $arrAdd = array();
                 foreach(str_split($line) as $char)
                     $arrAdd[] = ($char=='1')?1:0;
                 $barcode_array['bcode'][] = $arrAdd;
             }
-                    
+
             return $barcode_array;
         }
-        
+
         //----------------------------------------------------------------------
         public static function clearCache()
         {
             self::$frames = array();
         }
-        
+
         //----------------------------------------------------------------------
         public static function buildCache()
         {
 			QRtools::markTime('before_build_cache');
-			
+
 			$mask = new QRmask();
-            for ($a=1; $a <= QRSPEC_VERSION_MAX; $a++) {
+            for ($a=1; $a <= QRconst::QRSPEC_VERSION_MAX; $a++) {
                 $frame = QRspec::newFrame($a);
-                if (QR_IMAGE) {
+                if (QRconst::QR_IMAGE) {
                     $fileName = QR_CACHE_DIR.'frame_'.$a.'.png';
                     QRimage::png(self::binarize($frame), $fileName, 1, 0);
                 }
-				
+
 				$width = count($frame);
 				$bitMask = array_fill(0, $width, array_fill(0, $width, 0));
 				for ($maskNo=0; $maskNo<8; $maskNo++)
 					$mask->makeMaskNo($maskNo, $width, $frame, $bitMask, true);
             }
-			
+
 			QRtools::markTime('after_build_cache');
         }
 
         //----------------------------------------------------------------------
         public static function log($outfile, $err)
         {
-            if (QR_LOG_DIR !== false) {
+            if (QRconst::QR_LOG_DIR !== false) {
                 if ($err != '') {
                     if ($outfile !== false) {
-                        file_put_contents(QR_LOG_DIR.basename($outfile).'-errors.txt', date('Y-m-d H:i:s').': '.$err, FILE_APPEND);
+                        file_put_contents(QRconst::QR_LOG_DIR.basename($outfile).'-errors.txt', date('Y-m-d H:i:s').': '.$err, FILE_APPEND);
                     } else {
-                        file_put_contents(QR_LOG_DIR.'errors.txt', date('Y-m-d H:i:s').': '.$err, FILE_APPEND);
+                        file_put_contents(QRconst::QR_LOG_DIR.'errors.txt', date('Y-m-d H:i:s').': '.$err, FILE_APPEND);
                     }
-                }    
+                }
             }
         }
-        
+
         //----------------------------------------------------------------------
-        public static function dumpMask($frame) 
+        public static function dumpMask($frame)
         {
             $width = count($frame);
             for($y=0;$y<$width;$y++) {
@@ -292,36 +353,36 @@ if (!defined('QR_CONST')) {
                 }
             }
         }
-        
+
 		//----------------------------------------------------------------------
         public static function startTimeBenchmark()
         {
 			$GLOBALS['qr_time_bench'] = array();
             self::markTime('start');
         }
-		
+
         //----------------------------------------------------------------------
         public static function markTime($markerId)
         {
             list($usec, $sec) = explode(" ", microtime());
             $time = ((float)$usec + (float)$sec);
-            
+
             if (!isset($GLOBALS['qr_time_bench']))
                 $GLOBALS['qr_time_bench'] = array();
-            
+
             $GLOBALS['qr_time_bench'][$markerId] = $time;
-			
+
 			if ((!self::$timeBenchmarkStarted)&&($markerId != 'start')) {
 				self::$timeBenchmarkStarted = true;
 				$GLOBALS['qr_time_bench']['start'] = $time;
 			}
         }
-        
+
         //----------------------------------------------------------------------
         public static function timeBenchmark()
         {
             self::markTime('finish');
-        
+
             $lastTime = 0;
             $startTime = 0;
             $p = 0;
@@ -336,23 +397,23 @@ if (!defined('QR_CONST')) {
                 } else {
                     $startTime = $thisTime;
                 }
-                
+
                 $p++;
                 $lastTime = $thisTime;
             }
-            
+
             echo '</tbody><tfoot>
                 <tr style="border-top:2px solid black"><th style="text-align:right">TOTAL: </th><td>'.number_format($lastTime-$startTime, 6).'s</td></tr>
             </tfoot>
             </table>';
         }
-        
+
     }
-    
+
 	/** @}*/
-	
+
     //##########################################################################
-    
+
 
 
 
@@ -392,21 +453,6 @@ if (!defined('QR_CONST')) {
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
-if (!defined('QR_SPEC')) {
-	define('QR_SPEC', true);
-
-    /** Maximal Version no allowed by QR-Code spec */
-    define('QRSPEC_VERSION_MAX', 40);
-    /** Maximal Code size in pixels allowed by QR-Code spec */
-    define('QRSPEC_WIDTH_MAX',   177);
-
-    define('QRCAP_WIDTH',        0);
-    define('QRCAP_WORDS',        1);
-    define('QRCAP_REMINDER',     2);
-    define('QRCAP_EC',           3);
-
-}
 
     /** @addtogroup CoreGroup */
     /** @{ */
@@ -479,7 +525,7 @@ if (!defined('QR_SPEC')) {
         */
         public static function getDataLength($version, $level)
         {
-            return self::$capacity[$version][QRCAP_WORDS] - self::$capacity[$version][QRCAP_EC][$level];
+            return self::$capacity[$version][QRconst::QRCAP_WORDS] - self::$capacity[$version][QRconst::QRCAP_EC][$level];
         }
 
         //----------------------------------------------------------------------
@@ -490,7 +536,7 @@ if (!defined('QR_SPEC')) {
         */
         public static function getECCLength($version, $level)
         {
-            return self::$capacity[$version][QRCAP_EC][$level];
+            return self::$capacity[$version][QRconst::QRCAP_EC][$level];
         }
 
         //----------------------------------------------------------------------
@@ -500,7 +546,7 @@ if (!defined('QR_SPEC')) {
         */
         public static function getWidth($version)
         {
-            return self::$capacity[$version][QRCAP_WIDTH];
+            return self::$capacity[$version][QRconst::QRCAP_WIDTH];
         }
 
         //----------------------------------------------------------------------
@@ -510,7 +556,7 @@ if (!defined('QR_SPEC')) {
         */
         public static function getRemainder($version)
         {
-            return self::$capacity[$version][QRCAP_REMINDER];
+            return self::$capacity[$version][QRconst::QRCAP_REMINDER];
         }
 
         //----------------------------------------------------------------------
@@ -522,8 +568,8 @@ if (!defined('QR_SPEC')) {
         public static function getMinimumVersion($size, $level)
         {
 
-            for($i=1; $i<= QRSPEC_VERSION_MAX; $i++) {
-                $words  = self::$capacity[$i][QRCAP_WORDS] - self::$capacity[$i][QRCAP_EC][$level];
+            for($i=1; $i<= QRconst::QRSPEC_VERSION_MAX; $i++) {
+                $words  = self::$capacity[$i][QRconst::QRCAP_WORDS] - self::$capacity[$i][QRconst::QRCAP_EC][$level];
                 if($words >= $size)
                     return $i;
             }
@@ -546,7 +592,7 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function lengthIndicator($mode, $version)
         {
-            if ($mode == QR_MODE_STRUCTURE)
+            if ($mode == QRconst::QR_MODE_STRUCTURE)
                 return 0;
 
             if ($version <= 9) {
@@ -563,7 +609,7 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function maximumWords($mode, $version)
         {
-            if($mode == QR_MODE_STRUCTURE)
+            if($mode == QRconst::QR_MODE_STRUCTURE)
                 return 3;
 
             if($version <= 9) {
@@ -577,7 +623,7 @@ if (!defined('QR_SPEC')) {
             $bits = self::$lengthTableBits[$mode][$l];
             $words = (1 << $bits) - 1;
 
-            if($mode == QR_MODE_KANJI) {
+            if($mode == QRconst::QR_MODE_KANJI) {
                 $words *= 2; // the number of bytes is required
             }
 
@@ -766,7 +812,7 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function getVersionPattern($version)
         {
-            if($version < 7 || $version > QRSPEC_VERSION_MAX)
+            if($version < 7 || $version > QRconst::QRSPEC_VERSION_MAX)
                 return 0;
 
             return self::$versionPattern[$version -7];
@@ -827,7 +873,7 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function createFrame($version)
         {
-            $width = self::$capacity[$version][QRCAP_WIDTH];
+            $width = self::$capacity[$version][QRconst::QRCAP_WIDTH];
             $frameLine = str_repeat ("\0", $width);
             $frame = array_fill(0, $width, $frameLine);
 
@@ -997,14 +1043,14 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function newFrame($version)
         {
-            if($version < 1 || $version > QRSPEC_VERSION_MAX)
+            if($version < 1 || $version > QRconst::QRSPEC_VERSION_MAX)
                 return null;
 
             if(!isset(self::$frames[$version])) {
 
-                $fileName = QR_CACHE_DIR.'frame_'.$version.'.dat';
+                $fileName = QRconst::QR_CACHE_DIR.'frame_'.$version.'.dat';
 
-                if (QR_CACHEABLE) {
+                if (QRconst::QR_CACHEABLE) {
                     if (file_exists($fileName)) {
                         self::$frames[$version] = self::unserial(file_get_contents($fileName));
                     } else {
@@ -1085,11 +1131,6 @@ if (!defined('QR_SPEC')) {
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
-if (!defined('QR_AREA')) {
-    define('QR_IMAGE', true);
-}
-
 
     /** @defgroup OutputGroup Standard API Output
     Provide simple Raster & Vector output */
@@ -1251,14 +1292,6 @@ if (!defined('QR_AREA')) {
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-if (!defined('QR_INPUT')) {
-	define('QR_INPUT', true);
-
-	define('STRUCTURE_HEADER_BITS',  20);
-    define('MAX_STRUCTURED_SYMBOLS', 16);
-
-}
-
 	/** @addtogroup CoreGroup */
 	/** @{ */
 
@@ -1298,7 +1331,7 @@ if (!defined('QR_INPUT')) {
 
                 $val = 0x1;
                 $bs->appendNum(4, $val);
-                $bs->appendNum(QRspec::lengthIndicator(QR_MODE_NUM, $version), $this->size);
+                $bs->appendNum(QRspec::lengthIndicator(QRconst::QR_MODE_NUM, $version), $this->size);
 
                 for($i=0; $i<$words; $i++) {
                     $val  = (ord($this->data[$i*3  ]) - ord('0')) * 100;
@@ -1332,7 +1365,7 @@ if (!defined('QR_INPUT')) {
                 $bs = new QRbitstream();
 
                 $bs->appendNum(4, 0x02);
-                $bs->appendNum(QRspec::lengthIndicator(QR_MODE_AN, $version), $this->size);
+                $bs->appendNum(QRspec::lengthIndicator(QRconst::QR_MODE_AN, $version), $this->size);
 
                 for($i=0; $i<$words; $i++) {
                     $val  = (int)QRinput::lookAnTable(ord($this->data[$i*2  ])) * 45;
@@ -1361,7 +1394,7 @@ if (!defined('QR_INPUT')) {
                 $bs = new QRbitstream();
 
                 $bs->appendNum(4, 0x4);
-                $bs->appendNum(QRspec::lengthIndicator(QR_MODE_8, $version), $this->size);
+                $bs->appendNum(QRspec::lengthIndicator(QRconst::QR_MODE_8, $version), $this->size);
 
                 for($i=0; $i<$this->size; $i++) {
                     $bs->appendNum(8, ord($this->data[$i]));
@@ -1383,7 +1416,7 @@ if (!defined('QR_INPUT')) {
                 $bs = new QRbitrtream();
 
                 $bs->appendNum(4, 0x8);
-                $bs->appendNum(QRspec::lengthIndicator(QR_MODE_KANJI, $version), (int)($this->size / 2));
+                $bs->appendNum(QRspec::lengthIndicator(QRconst::QR_MODE_KANJI, $version), (int)($this->size / 2));
 
                 for($i=0; $i<$this->size; $i+=2) {
                     $val = (ord($this->data[$i]) << 8) | ord($this->data[$i+1]);
@@ -1435,11 +1468,11 @@ if (!defined('QR_INPUT')) {
                 $version = 1;
 
             switch($this->mode) {
-                case QR_MODE_NUM:        $bits = QRinput::estimateBitsModeNum($this->size);    break;
-                case QR_MODE_AN:        $bits = QRinput::estimateBitsModeAn($this->size);    break;
-                case QR_MODE_8:            $bits = QRinput::estimateBitsMode8($this->size);    break;
-                case QR_MODE_KANJI:        $bits = QRinput::estimateBitsModeKanji($this->size);break;
-                case QR_MODE_STRUCTURE:    return STRUCTURE_HEADER_BITS;
+                case QRconst::QR_MODE_NUM:          $bits = QRinput::estimateBitsModeNum($this->size);   break;
+                case QRconst::QR_MODE_AN:           $bits = QRinput::estimateBitsModeAn($this->size);    break;
+                case QRconst::QR_MODE_8:            $bits = QRinput::estimateBitsMode8($this->size);     break;
+                case QRconst::QR_MODE_KANJI:        $bits = QRinput::estimateBitsModeKanji($this->size); break;
+                case QRconst::QR_MODE_STRUCTURE:    return QRconst::STRUCTURE_HEADER_BITS;
                 default:
                     return 0;
             }
@@ -1481,11 +1514,11 @@ if (!defined('QR_INPUT')) {
                     $ret = 0;
 
                     switch($this->mode) {
-                        case QR_MODE_NUM:        $ret = $this->encodeModeNum($version);    break;
-                        case QR_MODE_AN:        $ret = $this->encodeModeAn($version);    break;
-                        case QR_MODE_8:            $ret = $this->encodeMode8($version);    break;
-                        case QR_MODE_KANJI:        $ret = $this->encodeModeKanji($version);break;
-                        case QR_MODE_STRUCTURE:    $ret = $this->encodeModeStructure();    break;
+                        case QRconst::QR_MODE_NUM:        $ret = $this->encodeModeNum($version);    break;
+                        case QRconst::QR_MODE_AN:        $ret = $this->encodeModeAn($version);    break;
+                        case QRconst::QR_MODE_8:            $ret = $this->encodeMode8($version);    break;
+                        case QRconst::QR_MODE_KANJI:        $ret = $this->encodeModeKanji($version);break;
+                        case QRconst::QR_MODE_STRUCTURE:    $ret = $this->encodeModeStructure();    break;
 
                         default:
                             break;
@@ -1513,9 +1546,9 @@ if (!defined('QR_INPUT')) {
         private $level;
 
         //----------------------------------------------------------------------
-        public function __construct($version = 0, $level = QR_ECLEVEL_L)
+        public function __construct($version = 0, $level = QRconst::QR_ECLEVEL_L)
         {
-            if ($version < 0 || $version > QRSPEC_VERSION_MAX || $level > QR_ECLEVEL_H) {
+            if ($version < 0 || $version > QRconst::QRSPEC_VERSION_MAX || $level > QRconst::QR_ECLEVEL_H) {
                 throw new Exception('Invalid version no');
                 return NULL;
             }
@@ -1533,7 +1566,7 @@ if (!defined('QR_INPUT')) {
         //----------------------------------------------------------------------
         public function setVersion($version)
         {
-            if($version < 0 || $version > QRSPEC_VERSION_MAX) {
+            if($version < 0 || $version > QRconst::QRSPEC_VERSION_MAX) {
                 throw new Exception('Invalid version no');
                 return -1;
             }
@@ -1552,7 +1585,7 @@ if (!defined('QR_INPUT')) {
         //----------------------------------------------------------------------
         public function setErrorCorrectionLevel($level)
         {
-            if($level > QR_ECLEVEL_H) {
+            if($level > QRconst::QR_ECLEVEL_H) {
                 throw new Exception('Invalid ECLEVEL');
                 return -1;
             }
@@ -1584,18 +1617,18 @@ if (!defined('QR_INPUT')) {
 
         public function insertStructuredAppendHeader($size, $index, $parity)
         {
-            if( $size > MAX_STRUCTURED_SYMBOLS ) {
+            if( $size > QRconst::MAX_STRUCTURED_SYMBOLS ) {
                 throw new Exception('insertStructuredAppendHeader wrong size');
             }
 
-            if( $index <= 0 || $index > MAX_STRUCTURED_SYMBOLS ) {
+            if( $index <= 0 || $index > QRconst::MAX_STRUCTURED_SYMBOLS ) {
                 throw new Exception('insertStructuredAppendHeader wrong index');
             }
 
             $buf = array($size, $index, $parity);
 
             try {
-                $entry = new QRinputItem(QR_MODE_STRUCTURE, 3, buf);
+                $entry = new QRinputItem(QRconst::QR_MODE_STRUCTURE, 3, buf);
                 array_unshift($this->items, $entry);
                 return 0;
             } catch (Exception $e) {
@@ -1609,7 +1642,7 @@ if (!defined('QR_INPUT')) {
             $parity = 0;
 
             foreach($this->items as $item) {
-                if($item->mode != QR_MODE_STRUCTURE) {
+                if($item->mode != QRconst::QR_MODE_STRUCTURE) {
                     for($i=$item->size-1; $i>=0; $i--) {
                         $parity ^= $item->data[$i];
                     }
@@ -1734,11 +1767,11 @@ if (!defined('QR_INPUT')) {
                 return false;
 
             switch($mode) {
-                case QR_MODE_NUM:       return self::checkModeNum($size, $data);   break;
-                case QR_MODE_AN:        return self::checkModeAn($size, $data);    break;
-                case QR_MODE_KANJI:     return self::checkModeKanji($size, $data); break;
-                case QR_MODE_8:         return true; break;
-                case QR_MODE_STRUCTURE: return true; break;
+                case QRconst::QR_MODE_NUM:       return self::checkModeNum($size, $data);   break;
+                case QRconst::QR_MODE_AN:        return self::checkModeAn($size, $data);    break;
+                case QRconst::QR_MODE_KANJI:     return self::checkModeKanji($size, $data); break;
+                case QRconst::QR_MODE_8:         return true; break;
+                case QRconst::QR_MODE_STRUCTURE: return true; break;
 
                 default:
                     break;
@@ -1782,7 +1815,7 @@ if (!defined('QR_INPUT')) {
         {
             $payload = $bits - 4 - QRspec::lengthIndicator($mode, $version);
             switch($mode) {
-                case QR_MODE_NUM:
+                case QRconst::QR_MODE_NUM:
                     $chunks = (int)($payload / 10);
                     $remain = $payload - $chunks * 10;
                     $size = $chunks * 3;
@@ -1792,20 +1825,20 @@ if (!defined('QR_INPUT')) {
                         $size += 1;
                     }
                     break;
-                case QR_MODE_AN:
+                case QRconst::QR_MODE_AN:
                     $chunks = (int)($payload / 11);
                     $remain = $payload - $chunks * 11;
                     $size = $chunks * 2;
                     if($remain >= 6)
                         $size++;
                     break;
-                case QR_MODE_8:
+                case QRconst::QR_MODE_8:
                     $size = (int)($payload / 8);
                     break;
-                case QR_MODE_KANJI:
+                case QRconst::QR_MODE_KANJI:
                     $size = (int)(($payload / 13) * 2);
                     break;
-                case QR_MODE_STRUCTURE:
+                case QRconst::QR_MODE_STRUCTURE:
                     $size = (int)($payload / 8);
                     break;
                 default:
@@ -2224,7 +2257,7 @@ if (!defined('QR_INPUT')) {
  * The following data / specifications are taken from
  * "Two dimensional symbol -- QR-code -- Basic Specification" (JIS X0510:2004)
  *  or
- * "Automatic identification and data capture techniques -- 
+ * "Automatic identification and data capture techniques --
  *  QR Code 2005 bar code symbology specification" (ISO/IEC 18004:2006)
  *
  * This library is free software; you can redistribute it and/or
@@ -2241,10 +2274,10 @@ if (!defined('QR_INPUT')) {
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
- 
+
 	/** @addtogroup CoreGroup */
 	/** @{ */
-	
+
 	/** Input stream splitter. */
     class QRsplit {
 
@@ -2253,72 +2286,72 @@ if (!defined('QR_INPUT')) {
         public $modeHint;
 
         //----------------------------------------------------------------------
-        public function __construct($dataStr, $input, $modeHint) 
+        public function __construct($dataStr, $input, $modeHint)
         {
             $this->dataStr  = $dataStr;
             $this->input    = $input;
             $this->modeHint = $modeHint;
         }
-        
+
         //----------------------------------------------------------------------
         public static function isdigitat($str, $pos)
-        {    
+        {
             if ($pos >= strlen($str))
                 return false;
-            
+
             return ((ord($str[$pos]) >= ord('0'))&&(ord($str[$pos]) <= ord('9')));
         }
-        
+
         //----------------------------------------------------------------------
         public static function isalnumat($str, $pos)
         {
             if ($pos >= strlen($str))
                 return false;
-                
+
             return (QRinput::lookAnTable(ord($str[$pos])) >= 0);
         }
 
         //----------------------------------------------------------------------
         public function identifyMode($pos)
         {
-            if ($pos >= strlen($this->dataStr)) 
-                return QR_MODE_NUL;
-                
+            if ($pos >= strlen($this->dataStr))
+                return QRconst::QR_MODE_NUL;
+
             $c = $this->dataStr[$pos];
-            
+
             if(self::isdigitat($this->dataStr, $pos)) {
-                return QR_MODE_NUM;
+                return QRconst::QR_MODE_NUM;
             } else if(self::isalnumat($this->dataStr, $pos)) {
-                return QR_MODE_AN;
-            } else if($this->modeHint == QR_MODE_KANJI) {
-            
-                if ($pos+1 < strlen($this->dataStr)) 
+                return QRconst::QR_MODE_AN;
+            } else if($this->modeHint == QRconst::QR_MODE_KANJI) {
+
+                if ($pos+1 < strlen($this->dataStr))
                 {
                     $d = $this->dataStr[$pos+1];
                     $word = (ord($c) << 8) | ord($d);
                     if(($word >= 0x8140 && $word <= 0x9ffc) || ($word >= 0xe040 && $word <= 0xebbf)) {
-                        return QR_MODE_KANJI;
+                        return QRconst::QR_MODE_KANJI;
                     }
                 }
             }
 
-            return QR_MODE_8;
-        } 
-        
+            return QRconst::QR_MODE_8;
+        }
+
         //----------------------------------------------------------------------
         public function eatNum()
         {
-            $ln = QRspec::lengthIndicator(QR_MODE_NUM, $this->input->getVersion());
+            $ln = QRspec::lengthIndicator(QRconst::QR_MODE_NUM, $this->input->getVersion());
 
             $p = 0;
             while(self::isdigitat($this->dataStr, $p)) {
                 $p++;
             }
-            
+
             $run = $p;
             $mode = $this->identifyMode($p);
-            
-            if($mode == QR_MODE_8) {
+
+            if($mode == QRconst::QR_MODE_8) {
                 $dif = QRinput::estimateBitsModeNum($run) + 4 + $ln
                      + QRinput::estimateBitsMode8(1)         // + 4 + l8
                      - QRinput::estimateBitsMode8($run + 1); // - 4 - l8
@@ -2326,7 +2359,7 @@ if (!defined('QR_INPUT')) {
                     return $this->eat8();
                 }
             }
-            if($mode == QR_MODE_AN) {
+            if($mode == QRconst::QR_MODE_AN) {
                 $dif = QRinput::estimateBitsModeNum($run) + 4 + $ln
                      + QRinput::estimateBitsModeAn(1)        // + 4 + la
                      - QRinput::estimateBitsModeAn($run + 1);// - 4 - la
@@ -2334,33 +2367,33 @@ if (!defined('QR_INPUT')) {
                     return $this->eatAn();
                 }
             }
-            
-            $ret = $this->input->append(QR_MODE_NUM, $run, str_split($this->dataStr));
+
+            $ret = $this->input->append(QRconst::QR_MODE_NUM, $run, str_split($this->dataStr));
             if($ret < 0)
                 return -1;
 
             return $run;
         }
-        
+
         //----------------------------------------------------------------------
         public function eatAn()
         {
-            $la = QRspec::lengthIndicator(QR_MODE_AN,  $this->input->getVersion());
-            $ln = QRspec::lengthIndicator(QR_MODE_NUM, $this->input->getVersion());
+            $la = QRspec::lengthIndicator(QRconst::QR_MODE_AN,  $this->input->getVersion());
+            $ln = QRspec::lengthIndicator(QRconst::QR_MODE_NUM, $this->input->getVersion());
 
             $p = 0;
-            
+
             while(self::isalnumat($this->dataStr, $p)) {
                 if(self::isdigitat($this->dataStr, $p)) {
                     $q = $p;
                     while(self::isdigitat($this->dataStr, $q)) {
                         $q++;
                     }
-                    
+
                     $dif = QRinput::estimateBitsModeAn($p) // + 4 + la
                          + QRinput::estimateBitsModeNum($q - $p) + 4 + $ln
                          - QRinput::estimateBitsModeAn($q); // - 4 - la
-                         
+
                     if($dif < 0) {
                         break;
                     } else {
@@ -2382,23 +2415,23 @@ if (!defined('QR_INPUT')) {
                 }
             }
 
-            $ret = $this->input->append(QR_MODE_AN, $run, str_split($this->dataStr));
+            $ret = $this->input->append(QRconst::QR_MODE_AN, $run, str_split($this->dataStr));
             if($ret < 0)
                 return -1;
 
             return $run;
         }
-        
+
         //----------------------------------------------------------------------
         public function eatKanji()
         {
             $p = 0;
-            
-            while($this->identifyMode($p) == QR_MODE_KANJI) {
+
+            while($this->identifyMode($p) == QRconst::QR_MODE_KANJI) {
                 $p += 2;
             }
-            
-            $ret = $this->input->append(QR_MODE_KANJI, $p, str_split($this->dataStr));
+
+            $ret = $this->input->append(QRconst::QR_MODE_KANJI, $p, str_split($this->dataStr));
             if($ret < 0)
                 return -1;
 
@@ -2408,19 +2441,19 @@ if (!defined('QR_INPUT')) {
         //----------------------------------------------------------------------
         public function eat8()
         {
-            $la = QRspec::lengthIndicator(QR_MODE_AN, $this->input->getVersion());
-            $ln = QRspec::lengthIndicator(QR_MODE_NUM, $this->input->getVersion());
+            $la = QRspec::lengthIndicator(QRconst::QR_MODE_AN, $this->input->getVersion());
+            $ln = QRspec::lengthIndicator(QRconst::QR_MODE_NUM, $this->input->getVersion());
 
             $p = 1;
             $dataStrLen = strlen($this->dataStr);
-            
+
             while($p < $dataStrLen) {
-                
+
                 $mode = $this->identifyMode($p);
-                if($mode == QR_MODE_KANJI) {
+                if($mode == QRconst::QR_MODE_KANJI) {
                     break;
                 }
-                if($mode == QR_MODE_NUM) {
+                if($mode == QRconst::QR_MODE_NUM) {
                     $q = $p;
                     while(self::isdigitat($this->dataStr, $q)) {
                         $q++;
@@ -2433,7 +2466,7 @@ if (!defined('QR_INPUT')) {
                     } else {
                         $p = $q;
                     }
-                } else if($mode == QR_MODE_AN) {
+                } else if($mode == QRconst::QR_MODE_AN) {
                     $q = $p;
                     while(self::isalnumat($this->dataStr, $q)) {
                         $q++;
@@ -2452,8 +2485,8 @@ if (!defined('QR_INPUT')) {
             }
 
             $run = $p;
-            $ret = $this->input->append(QR_MODE_8, $run, str_split($this->dataStr));
-            
+            $ret = $this->input->append(QRconst::QR_MODE_8, $run, str_split($this->dataStr));
+
             if($ret < 0)
                 return -1;
 
@@ -2469,22 +2502,22 @@ if (!defined('QR_INPUT')) {
                     return 0;
 
                 $mode = $this->identifyMode(0);
-                
+
                 switch ($mode) {
-                    case QR_MODE_NUM: $length = $this->eatNum(); break;
-                    case QR_MODE_AN:  $length = $this->eatAn(); break;
-                    case QR_MODE_KANJI:
-                        if ($hint == QR_MODE_KANJI)
+                    case QRconst::QR_MODE_NUM: $length = $this->eatNum(); break;
+                    case QRconst::QR_MODE_AN:  $length = $this->eatAn(); break;
+                    case QRconst::QR_MODE_KANJI:
+                        if ($hint == QRconst::QR_MODE_KANJI)
                                 $length = $this->eatKanji();
                         else    $length = $this->eat8();
                         break;
                     default: $length = $this->eat8(); break;
-                
+
                 }
 
                 if($length == 0) return 0;
                 if($length < 0)  return -1;
-                
+
                 $this->dataStr = substr($this->dataStr, $length);
             }
         }
@@ -2494,10 +2527,10 @@ if (!defined('QR_INPUT')) {
         {
             $stringLen = strlen($this->dataStr);
             $p = 0;
-            
+
             while ($p<$stringLen) {
                 $mode = self::identifyMode(substr($this->dataStr, $p), $this->modeHint);
-                if($mode == QR_MODE_KANJI) {
+                if($mode == QRconst::QR_MODE_KANJI) {
                     $p += 2;
                 } else {
                     if (ord($this->dataStr[$p]) >= ord('a') && ord($this->dataStr[$p]) <= ord('z')) {
@@ -2518,14 +2551,14 @@ if (!defined('QR_INPUT')) {
             }
 
             $split = new QRsplit($string, $input, $modeHint);
-            
+
             if(!$casesensitive)
                 $split->toUpper();
-                
+
             return $split->splitString();
         }
     }
-	
+
 	/** @} */
 
 
@@ -2819,15 +2852,6 @@ if (!defined('QR_INPUT')) {
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-if (!defined('QR_MASK')) {
-	define('QR_MASK', true);
-
-	define('N1', 3);
-	define('N2', 3);
-	define('N3', 40);
-	define('N4', 10);
-}
-
 	/** @addtogroup CoreGroup */
 	/** @{ */
 
@@ -2838,7 +2862,7 @@ if (!defined('QR_MASK')) {
 		//----------------------------------------------------------------------
 		public function __construct()
         {
-            $this->runLength = array_fill(0, QRSPEC_WIDTH_MAX + 1, 0);
+            $this->runLength = array_fill(0, QRconst::QRSPEC_WIDTH_MAX + 1, 0);
         }
 
         //----------------------------------------------------------------------
@@ -2944,15 +2968,15 @@ if (!defined('QR_MASK')) {
             $b = 0;
             $bitMask = array();
 
-            $fileName = QR_CACHE_DIR.'mask_'.$maskNo.DIRECTORY_SEPARATOR.'mask_'.$width.'_'.$maskNo.'.dat';
+            $fileName = QRconst::QR_CACHE_DIR.'mask_'.$maskNo.DIRECTORY_SEPARATOR.'mask_'.$width.'_'.$maskNo.'.dat';
 
-            if (QR_CACHEABLE) {
+            if (QRconst::QR_CACHEABLE) {
                 if (file_exists($fileName)) {
                     $bitMask = self::unserial(file_get_contents($fileName));
                 } else {
                     $bitMask = $this->generateMaskNo($maskNo, $width, $s, $d);
-                    if (!file_exists(QR_CACHE_DIR.'mask_'.$maskNo))
-                        mkdir(QR_CACHE_DIR.'mask_'.$maskNo);
+                    if (!file_exists(QRconst::QR_CACHE_DIR.'mask_'.$maskNo))
+                        mkdir(QRconst::QR_CACHE_DIR.'mask_'.$maskNo);
                     file_put_contents($fileName, self::serial($bitMask));
                 }
             } else {
@@ -2994,7 +3018,7 @@ if (!defined('QR_MASK')) {
             for($i=0; $i<$length; $i++) {
 
                 if($this->runLength[$i] >= 5) {
-                    $demerit += (N1 + ($this->runLength[$i] - 5));
+                    $demerit += (QRconst::N1 + ($this->runLength[$i] - 5));
                 }
                 if($i & 1) {
                     if(($i >= 3) && ($i < ($length-2)) && ($this->runLength[$i] % 3 == 0)) {
@@ -3004,9 +3028,9 @@ if (!defined('QR_MASK')) {
                            ($this->runLength[$i+1] == $fact) &&
                            ($this->runLength[$i+2] == $fact)) {
                             if(($this->runLength[$i-3] < 0) || ($this->runLength[$i-3] >= (4 * $fact))) {
-                                $demerit += N3;
+                                $demerit += QRconst::N3;
                             } else if((($i+3) >= $length) || ($this->runLength[$i+3] >= (4 * $fact))) {
-                                $demerit += N3;
+                                $demerit += QRconst::N3;
                             }
                         }
                     }
@@ -3036,7 +3060,7 @@ if (!defined('QR_MASK')) {
                         $w22 = ord($frameY[$x]) | ord($frameY[$x-1]) | ord($frameYM[$x]) | ord($frameYM[$x-1]);
 
                         if(($b22 | ($w22 ^ 1))&1) {
-                            $demerit += N2;
+                            $demerit += QRconst::N2;
                         }
                     }
                     if(($x == 0) && (ord($frameY[$x]) & 1)) {
@@ -3091,9 +3115,9 @@ if (!defined('QR_MASK')) {
 
             $checked_masks = array(0,1,2,3,4,5,6,7);
 
-            if (QR_FIND_FROM_RANDOM !== false) {
+            if (QRconst::QR_FIND_FROM_RANDOM !== false) {
 
-                $howManuOut = 8-(QR_FIND_FROM_RANDOM % 9);
+                $howManuOut = 8-(QRconst::QR_FIND_FROM_RANDOM % 9);
                 for ($i = 0; $i <  $howManuOut; $i++) {
                     $remPos = rand (0, count($checked_masks)-1);
                     unset($checked_masks[$remPos]);
@@ -3112,7 +3136,7 @@ if (!defined('QR_MASK')) {
                 $blacks  = $this->makeMaskNo($i, $width, $frame, $mask);
                 $blacks += $this->writeFormatInformation($width, $mask, $i, $level);
                 $blacks  = (int)(100 * $blacks / ($width * $width));
-                $demerit = (int)((int)(abs($blacks - 50) / 5) * N4);
+                $demerit = (int)((int)(abs($blacks - 50) / 5) * QRconst::N4);
                 $demerit += $this->evaluateSymbol($width, $mask);
 
                 if($demerit < $minDemerit) {
@@ -3167,24 +3191,7 @@ if (!defined('QR_MASK')) {
     //    W  E
     //     S
 
-if (!defined('QR_AREA')) {
-	define('QR_AREA', true);
 
-    define('QR_AREA_N', 0);
-    define('QR_AREA_E', 1);
-    define('QR_AREA_S', 2);
-    define('QR_AREA_W', 3);
-
-    define('QR_AREA_X', 0);
-    define('QR_AREA_Y', 1);
-
-    define('QR_AREA_TRACKER', 0);
-    define('QR_AREA_PATH',    1);
-    define('QR_AREA_POINT',   2);
-    define('QR_AREA_RECT',    3);
-    define('QR_AREA_LSHAPE',  4);
-
-}
     /** @addtogroup OutputGroup */
     /** @{ */
 
@@ -3254,9 +3261,9 @@ if (!defined('QR_AREA')) {
                 $py++;
             }
 
-            $this->paths[] = array(QR_AREA_TRACKER, 0,0);
-            $this->paths[] = array(QR_AREA_TRACKER, 0,($this->width-7));
-            $this->paths[] = array(QR_AREA_TRACKER, ($this->width-7),0);
+            $this->paths[] = array(QRconst::QR_AREA_TRACKER, 0,0);
+            $this->paths[] = array(QRconst::QR_AREA_TRACKER, 0,($this->width-7));
+            $this->paths[] = array(QRconst::QR_AREA_TRACKER, ($this->width-7),0);
 
             $this->groups = array();
             $this->curr_group = 1;
@@ -3330,22 +3337,22 @@ if (!defined('QR_AREA')) {
                 foreach($line as $item) {
 
                     $styles = 'border-top:';
-                    if ($item[QR_AREA_N])
+                    if ($item[QRconst::QR_AREA_N])
                             $styles .=  $style_on;
                     else    $styles .=  $style_off;
 
                     $styles .= 'border-bottom:';
-                    if ($item[QR_AREA_S])
+                    if ($item[QRconst::QR_AREA_S])
                             $styles .=  $style_on;
                     else    $styles .=  $style_off;
 
                     $styles .= 'border-right:';
-                    if ($item[QR_AREA_E])
+                    if ($item[QRconst::QR_AREA_E])
                             $styles .=  $style_on;
                     else    $styles .=  $style_off;
 
                     $styles .= 'border-left:';
-                    if ($item[QR_AREA_W])
+                    if ($item[QRconst::QR_AREA_W])
                             $styles .=  $style_on;
                     else    $styles .=  $style_off;
 
@@ -3514,10 +3521,10 @@ if (!defined('QR_AREA')) {
             $min_y = $this->width;
 
             foreach($group->points as $elem) {
-                $min_x = min($min_x, $elem[QR_AREA_X]);
-                $max_x = max($max_x, $elem[QR_AREA_X]);
-                $min_y = min($min_y, $elem[QR_AREA_Y]);
-                $max_y = max($max_y, $elem[QR_AREA_Y]);
+                $min_x = min($min_x, $elem[QRconst::QR_AREA_X]);
+                $max_x = max($max_x, $elem[QRconst::QR_AREA_X]);
+                $min_y = min($min_y, $elem[QRconst::QR_AREA_Y]);
+                $max_y = max($max_y, $elem[QRconst::QR_AREA_Y]);
             }
 
             return array($min_x, $min_y, $max_x+1, $max_y+1);
@@ -3536,7 +3543,7 @@ if (!defined('QR_AREA')) {
                     if ((!$group->vertical)||(!$group->horizontal)) {
 
                         $squareCoord = $this->detectSquare($group);
-                        array_unshift($squareCoord, QR_AREA_RECT);
+                        array_unshift($squareCoord, QRconst::QR_AREA_RECT);
 
                         $this->paths[] = $squareCoord;
 
@@ -3548,7 +3555,7 @@ if (!defined('QR_AREA')) {
                         foreach($group->paths as &$path)
                             self::rle($path[2]);
 
-                        $this->paths[] = array(QR_AREA_PATH, $group->paths);
+                        $this->paths[] = array(QRconst::QR_AREA_PATH, $group->paths);
                     }
                 } else if (($group->total == 3)&&($group->vertical)&&($group->horizontal)) {
                     $squareCoord = $this->detectSquare($group);
@@ -3566,8 +3573,8 @@ if (!defined('QR_AREA')) {
                     if ($this->getOnElem($squareCoord, 1, 1) != $group->id)
                         $variant = 3;
 
-                    $lshapes[] = $squareCoord[QR_AREA_X];
-                    $lshapes[] = $squareCoord[QR_AREA_Y];
+                    $lshapes[] = $squareCoord[QRconst::QR_AREA_X];
+                    $lshapes[] = $squareCoord[QRconst::QR_AREA_Y];
                     $lshapes[] = $variant;
 
                 } else if ($group->total >= 2) {
@@ -3580,17 +3587,17 @@ if (!defined('QR_AREA')) {
             }
 
             if (count($points) > 0) {
-                array_unshift($points, QR_AREA_POINT);
+                array_unshift($points, QRconst::QR_AREA_POINT);
                 $this->paths[] = $points;
             }
 
             if (count($squares) > 0) {
-                array_unshift($squares, QR_AREA_RECT);
+                array_unshift($squares, QRconst::QR_AREA_RECT);
                 $this->paths[] = $squares;
             }
 
             if (count($lshapes) > 0) {
-                array_unshift($lshapes, QR_AREA_LSHAPE);
+                array_unshift($lshapes, QRconst::QR_AREA_LSHAPE);
                 $this->paths[] = $lshapes;
             }
         }
@@ -3598,7 +3605,7 @@ if (!defined('QR_AREA')) {
         //----------------------------------------------------------------------
         private function reserveEdgeOnElem($elem, $edgeNo)
         {
-            $this->tab_edges[$elem[QR_AREA_Y]][$elem[QR_AREA_X]][$edgeNo] = true;
+            $this->tab_edges[$elem[QRconst::QR_AREA_Y]][$elem[QRconst::QR_AREA_X]][$edgeNo] = true;
         }
 
         //----------------------------------------------------------------------
@@ -3612,16 +3619,16 @@ if (!defined('QR_AREA')) {
         {
             foreach($group->points as $elem) {
                 if ($this->getOnElem($elem, -1, 0) == $group->id)
-                    $this->reserveEdgeOnElem($elem, QR_AREA_W);
+                    $this->reserveEdgeOnElem($elem, QRconst::QR_AREA_W);
 
                 if ($this->getOnElem($elem, +1, 0) == $group->id)
-                    $this->reserveEdgeOnElem($elem, QR_AREA_E);
+                    $this->reserveEdgeOnElem($elem, QRconst::QR_AREA_E);
 
                 if ($this->getOnElem($elem, 0, -1) == $group->id)
-                    $this->reserveEdgeOnElem($elem, QR_AREA_N);
+                    $this->reserveEdgeOnElem($elem, QRconst::QR_AREA_N);
 
                 if ($this->getOnElem($elem, 0, +1) == $group->id)
-                    $this->reserveEdgeOnElem($elem, QR_AREA_S);
+                    $this->reserveEdgeOnElem($elem, QRconst::QR_AREA_S);
             }
         }
 
@@ -3631,23 +3638,23 @@ if (!defined('QR_AREA')) {
             $this->markAdjacentEdges($group);
 
             $elem = $group->points[0];
-            $waylist = $this->findPath($group, $elem[QR_AREA_X], $elem[QR_AREA_Y]);
-            $group->paths[] = array($elem[QR_AREA_X], $elem[QR_AREA_Y], $waylist);
+            $waylist = $this->findPath($group, $elem[QRconst::QR_AREA_X], $elem[QRconst::QR_AREA_Y]);
+            $group->paths[] = array($elem[QRconst::QR_AREA_X], $elem[QRconst::QR_AREA_Y], $waylist);
 
             $tab = array();
             foreach($group->points as $elem) {
 
-                $edgeTab = $this->tab_edges[$elem[QR_AREA_Y]][$elem[QR_AREA_X]];
+                $edgeTab = $this->tab_edges[$elem[QRconst::QR_AREA_Y]][$elem[QRconst::QR_AREA_X]];
 
-                if (!(  $edgeTab[QR_AREA_N]
-                    &&  $edgeTab[QR_AREA_E]
-                    &&  $edgeTab[QR_AREA_S]
-                    &&  $edgeTab[QR_AREA_W])) {
+                if (!(  $edgeTab[QRconst::QR_AREA_N]
+                    &&  $edgeTab[QRconst::QR_AREA_E]
+                    &&  $edgeTab[QRconst::QR_AREA_S]
+                    &&  $edgeTab[QRconst::QR_AREA_W])) {
 
-                    if (!$edgeTab[QR_AREA_S]) {
+                    if (!$edgeTab[QRconst::QR_AREA_S]) {
 
-                        $waylistw = $this->findPath($group, $elem[QR_AREA_X], $elem[QR_AREA_Y]+1);
-                        $group->paths[] = array($elem[QR_AREA_X], $elem[QR_AREA_Y]+1, $waylistw);
+                        $waylistw = $this->findPath($group, $elem[QRconst::QR_AREA_X], $elem[QRconst::QR_AREA_Y]+1);
+                        $group->paths[] = array($elem[QRconst::QR_AREA_X], $elem[QRconst::QR_AREA_Y]+1, $waylistw);
                     }
                 }
             }
@@ -3688,31 +3695,31 @@ if (!defined('QR_AREA')) {
                 while ((count($move_expl) > 0)&&($have_way == false)) {
                     $way = array_shift($move_expl);
 
-                    if (($have_way==false)&&($way=='R')&&($this->tab_edges[$py][$px][QR_AREA_N]==false)) {
+                    if (($have_way==false)&&($way=='R')&&($this->tab_edges[$py][$px][QRconst::QR_AREA_N]==false)) {
                         $have_way = true;
                         $dir = $way;
-                        $this->reserveEdge($px, $py, QR_AREA_N);
+                        $this->reserveEdge($px, $py, QRconst::QR_AREA_N);
                         $px++;
                     }
 
-                    if (($have_way==false)&&($way=='B')&&($this->tab_edges[$py][$px-1][QR_AREA_E]==false)) {
+                    if (($have_way==false)&&($way=='B')&&($this->tab_edges[$py][$px-1][QRconst::QR_AREA_E]==false)) {
                         $have_way = true;
                         $dir = $way;
-                        $this->reserveEdge($px-1, $py, QR_AREA_E);
+                        $this->reserveEdge($px-1, $py, QRconst::QR_AREA_E);
                         $py++;
                     }
 
-                    if (($have_way==false)&&($way=='L')&&($this->tab_edges[$py-1][$px-1][QR_AREA_S]==false)) {
+                    if (($have_way==false)&&($way=='L')&&($this->tab_edges[$py-1][$px-1][QRconst::QR_AREA_S]==false)) {
                         $have_way = true;
                         $dir = $way;
-                        $this->reserveEdge($px-1, $py-1, QR_AREA_S);
+                        $this->reserveEdge($px-1, $py-1, QRconst::QR_AREA_S);
                         $px--;
                     }
 
-                    if (($have_way==false)&&($way=='T')&&($this->tab_edges[$py-1][$px][QR_AREA_W]==false)) {
+                    if (($have_way==false)&&($way=='T')&&($this->tab_edges[$py-1][$px][QRconst::QR_AREA_W]==false)) {
                         $have_way = true;
                         $dir = $way;
-                        $this->reserveEdge($px, $py-1, QR_AREA_W);
+                        $this->reserveEdge($px, $py-1, QRconst::QR_AREA_W);
                         $py--;
                     }
                 }
@@ -3759,17 +3766,17 @@ if (!defined('QR_AREA')) {
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
- 
+
     /** @addtogroup OutputGroup */
     /** @{ */
-    
+
     class QRcanvasOutput extends QRarea {
- 
-        public function __construct($source_tab) 
+
+        public function __construct($source_tab)
         {
             parent::__construct($source_tab);
         }
- 
+
         //----------------------------------------------------------------------
         public static function encodeNum($num)
         {
@@ -3777,12 +3784,12 @@ if (!defined('QR_AREA')) {
             $map = '0123456789abcdefghijklmnopqrstuvwxyABCDEFGHIJKLMNOPQRSTUVWXY';
             $mapPos = $num % 60;
             $mapAdd = (int)($num / 60);
-            
+
             return $addTab[$mapAdd].$map[$mapPos];
         }
-        
+
         //----------------------------------------------------------------------
-        public static function compact_path(&$pathTab) 
+        public static function compact_path(&$pathTab)
         {
             if (count($pathTab) == 0) {
                 $pathTab = '';
@@ -3790,9 +3797,9 @@ if (!defined('QR_AREA')) {
                 $pathTab = count($pathTab).','.join(',', $pathTab);
             }
         }
-        
+
         //----------------------------------------------------------------------
-        public static function compact_points(&$pointsTab) 
+        public static function compact_points(&$pointsTab)
         {
             if (count($pointsTab) == 0) {
                 $pointsTab = '';
@@ -3803,12 +3810,12 @@ if (!defined('QR_AREA')) {
                 $pointsTab = $compacted;
             }
         }
-        
+
         //----------------------------------------------------------------------
         public static function compactCanvasCommands($ops)
         {
             $accumulated  = array();
-            
+
             $accumulated['SR'] = array();
             $accumulated['WR'] = array();
             $accumulated['SP'] = array();
@@ -3816,13 +3823,13 @@ if (!defined('QR_AREA')) {
             $accumulated['SB'] = array();
             $accumulated['WB'] = array();
             $accumulated['SO'] = array();
-            
+
             while (count($ops) > 0) {
                 $color  = array_shift($ops);
                 $opcode = array_shift($ops);
-                
+
                 if (($opcode == 'R') || ($opcode == 'P')) {
-                
+
                     do {
                         $num = array_shift($ops);
                         if (is_int($num)) {
@@ -3830,41 +3837,41 @@ if (!defined('QR_AREA')) {
                         } else {
                             array_unshift($ops, $num);
                         }
-                        
+
                     } while ((count($ops) > 0)&&(is_int($num)));
 
-                    
+
                 } else if ($opcode == 'B') {
-                    
+
                     array_shift($ops);
-                    
+
                     $px  = array_shift($ops);
                     $py  = array_shift($ops);
-                    
+
                     array_shift($ops);
-                    
+
                     $conftab = array();
                     $num = array_shift($ops);
-                    
+
                     while ((count($ops) > 0)&&(!($num === 'E'))) {
                         $conftab[] = $num;
                         $num = array_shift($ops);
                     }
-                    
+
                     $cc = count($conftab);
                     $deltas = '';
-                    
+
                     $lastposx = $px;
                     $lastposy = $py;
-                    
+
                     for($pos=0;$pos <$cc; $pos+=2) {
-                    
+
                         $dx = $lastposx - $conftab[$pos];
                         $dy = $lastposy - $conftab[$pos+1];
-                    
+
                         $lastposx = $conftab[$pos];
                         $lastposy = $conftab[$pos+1];
-                    
+
                         if ($dx < 0) {
                             $deltas .= chr(ord('a')-1-$dx);
                         } else if ($dx > 0) {
@@ -3872,7 +3879,7 @@ if (!defined('QR_AREA')) {
                         } else {
                             $deltas .= '0';
                         }
-                        
+
                         if ($dy < 0) {
                             $deltas .= chr(ord('a')-1-$dy);
                         } else if ($dy > 0) {
@@ -3880,9 +3887,9 @@ if (!defined('QR_AREA')) {
                         } else {
                             $deltas .= '0';
                         }
-                    
+
                     }
-                    
+
                     $deltas = strtr($deltas, array(
                         '00'=>'1',
                         'aa'=>'2',
@@ -3894,28 +3901,28 @@ if (!defined('QR_AREA')) {
                         'bA'=>'8',
                         'Ba'=>'9'
                     ));
-                    
+
                     $accumulated[$color.$opcode][] = join(',', array($px, $py, $deltas));
                 } else if ($opcode == 'O') {
                     $px  = array_shift($ops);
                     $py  = array_shift($ops);
-                    
+
                     $accumulated[$color.$opcode][] = join(',', array($px, $py));
                 }
             }
-            
+
             self::compact_points($accumulated['SR']);
             self::compact_points($accumulated['WR']);
             self::compact_points($accumulated['SP']);
             self::compact_points($accumulated['WP']);
-            
+
             self::compact_path($accumulated['SB']);
             self::compact_path($accumulated['WB']);
-            
+
             if (count($accumulated['SO']) > 0)
                     $accumulated['SO'] = join(',',$accumulated['SO']);
             else    $accumulated['SO'] = '';
-            
+
             $mapping = array(
                 'SO'=>'O',
                 'SB'=>'B',
@@ -3925,177 +3932,177 @@ if (!defined('QR_AREA')) {
                 'SP'=>'P',
                 'WP'=>'p'
             );
-            
+
             $whole = array();
-            
+
             foreach($mapping as $key=>$symb) {
                 if ($accumulated[$key]!='')
                     $whole[] = $symb.','.$accumulated[$key];
             }
-            
+
             return join(',', $whole);
         }
-        
+
 
         //----------------------------------------------------------------------
         public function getCanvasOps()
         {
             $ops = array();
-            
+
             foreach ($this->paths as $path) {
                 switch ($path[0]) {
-                    case QR_AREA_PATH:
+                    case QRconst::QR_AREA_PATH:
                             $pNum = 0;
-                            
+
                             foreach($path[1] as $pathDetails) {
                                 if ($pNum == 0) {
                                     $ops[] = 'S';
                                 } else if ($pNum > 0) {
                                     $ops[] = 'W';
                                 }
-                                
+
                                 $ops[] = 'B';
-                                
+
                                 $px = array_shift($pathDetails);
                                 $py = array_shift($pathDetails);
-                                
+
                                 $ops[] = 'M';
                                 $ops[] = $px;
                                 $ops[] = $py;
-                                
+
                                 $rle_steps = array_shift($pathDetails);
-                                
+
                                 $lastOp = '';
-                                
+
                                 while(count($rle_steps) > 0) {
-                                
+
                                     $delta = 1;
-                                    
+
                                     $operator = array_shift($rle_steps);
                                     if (($operator != 'R') && ($operator != 'L') && ($operator != 'T') && ($operator != 'B')) {
                                         $delta = (int)$operator;
                                         $operator = array_shift($rle_steps);
                                     }
-                                    
+
                                     if ($operator == 'R') $px += $delta;
                                     if ($operator == 'L') $px -= $delta;
                                     if ($operator == 'T') $py -= $delta;
                                     if ($operator == 'B') $py += $delta;
-                                    
+
                                     if ($lastOp != 'T')
                                         $ops[] = 'T';
-                                        
+
                                     $ops[] = $px;
                                     $ops[] = $py;
-                                    
+
                                     $lastOp = 'T';
                                 }
-                                
+
                                 $ops[] = 'E';
-                                
+
                                 $pNum++;
                             }
-    
+
                         break;
-                    case QR_AREA_POINT:
-                                
+                    case QRconst::QR_AREA_POINT:
+
                                 $symb = array_shift($path);
-                                
+
                                 $ops[] = 'S';
-                                
+
                                 $lastOp = '';
-                                
+
                                 while(count($path) > 0) {
                                     $px = array_shift($path);
                                     $py = array_shift($path);
-                                    
+
                                     if ($lastOp != 'P')
                                         $ops[] = 'P';
-                                        
+
                                     $ops[] = $px;
                                     $ops[] = $py;
-                                    
+
                                     $lastOp = 'P';
                                 }
-                                
+
                         break;
-                        
-                    case QR_AREA_RECT:
-                                
+
+                    case QRconst::QR_AREA_RECT:
+
                                 $symb = array_shift($path);
-                                
+
                                 $ops[] = 'S';
-                                
+
                                 $lastOp = '';
-                                
+
                                 while(count($path) > 0) {
                                     $px = array_shift($path);
                                     $py = array_shift($path);
                                     $ex = array_shift($path);
                                     $ey = array_shift($path);
-                                    
+
                                     if ($lastOp != 'R')
                                         $ops[] = 'R';
-                                        
+
                                     $ops[] = $px;
                                     $ops[] = $py;
                                     $ops[] = $ex-$px;
                                     $ops[] = $ey-$py;
-                                    
+
                                     $lastOp = 'R';
                                 }
-                                
-                        break;                      
-                        
-                    case QR_AREA_LSHAPE:
-                                
+
+                        break;
+
+                    case QRconst::QR_AREA_LSHAPE:
+
                                 $symb = array_shift($path);
-                                
+
                                 while(count($path) > 0) {
                                     $px = array_shift($path);
                                     $py = array_shift($path);
                                     $mode = (int)array_shift($path);
-                                    
+
                                     $pxd = ($mode % 2)?1:0;
                                     $pyd = ($mode > 1)?1:0;
-                                    
+
                                     $ops[] = 'S';
                                     $ops[] = 'R';
                                     $ops[] = $px;
                                     $ops[] = $py;
                                     $ops[] = 2;
                                     $ops[] = 2;
-                                    
+
                                     $ops[] = 'W';
                                     $ops[] = 'P';
                                     $ops[] = $px+$pxd;
                                     $ops[] = $py+$pyd;
                                 }
-                                
-                        break;  
-                        
-                    case QR_AREA_TRACKER:
-                                
+
+                        break;
+
+                    case QRconst::QR_AREA_TRACKER:
+
                                 $symb = array_shift($path);
-                                
+
                                 $px = array_shift($path);
                                 $py = array_shift($path);
-                                    
+
                                 $ops[] = 'S';
                                 $ops[] = 'O';
                                 $ops[] = $px;
                                 $ops[] = $py;
-                                    
-                        break;  
+
+                        break;
                 }
             }
-            
+
             return self::compactCanvasCommands($ops);
         }
     }
-    
+
     /** @} */
- 
+
 
 
 
@@ -4129,20 +4136,20 @@ if (!defined('QR_AREA')) {
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
- 
+
 	/** @addtogroup OutputGroup */
 	/** @{ */
-	
+
 	class QRsvgOutput extends QRarea {
- 
-		public function __construct($source_tab) 
+
+		public function __construct($source_tab)
 		{
 			parent::__construct($source_tab);
 		}
 
 		//----------------------------------------------------------------------
         public function mapX($px)
-		{	
+		{
 			return $px;
 		}
 
@@ -4157,121 +4164,121 @@ if (!defined('QR_AREA')) {
 		{
 			$lib = array();
 			$svg = array();
-			
+
 			$aggregate_paths = array();
-			
+
 			foreach ($this->paths as $path) {
 				switch ($path[0]) {
-					case QR_AREA_PATH:
+					case QRconst::QR_AREA_PATH:
 							$pNum = 0;
-							
+
 							foreach($path[1] as $pathDetails) {
-								
+
 								$px = array_shift($pathDetails);
 								$py = array_shift($pathDetails);
 								$rle_steps = array_shift($pathDetails);
-								
+
 								$aggregate_add = 'M'.$px.','.$py.' ';
-								
+
 								while(count($rle_steps) > 0) {
-								
+
 									$delta = 1;
-									
+
 									$operator = array_shift($rle_steps);
 									if (($operator != 'R') && ($operator != 'L') && ($operator != 'T') && ($operator != 'B')) {
 										$delta = (int)$operator;
 										$operator = array_shift($rle_steps);
 									}
-									
+
 									if ($operator == 'R') $aggregate_add .= 'h'.$delta;
 									if ($operator == 'L') $aggregate_add .= 'h-'.$delta;
 									if ($operator == 'T') $aggregate_add .= 'v-'.$delta;
 									if ($operator == 'B') $aggregate_add .= 'v'.$delta;
 								}
-								
+
 								$aggregate_paths[] = $aggregate_add;
-								
+
 								$pNum++;
 							}
-	
+
 						break;
-					case QR_AREA_POINT:
-								
+					case QRconst::QR_AREA_POINT:
+
 							$symb = array_shift($path);
-							
+
 							while(count($path) > 0) {
 								$px = array_shift($path);
 								$py = array_shift($path);
-								
+
 								$aggregate_paths[] = 'M'.$px.','.$py.' v1h1v-1h-1';
 							}
-							
+
 						break;
-						
-					case QR_AREA_RECT:
-							
+
+					case QRconst::QR_AREA_RECT:
+
 							$symb = array_shift($path);
-							
+
 							while(count($path) > 0) {
 								$px = array_shift($path);
 								$py = array_shift($path);
 								$ex = array_shift($path);
 								$ey = array_shift($path);
-								
+
 								$w = $ex-$px;
 								$h = $ey-$py;
-								
+
 								$aggregate_paths[] = 'M'.$px.','.$py.' h'.$w.'v'.$h.'h-'.$w.'v-'.$h;
 							}
-							
-						break;						
-						
-					case QR_AREA_LSHAPE:
-								
+
+						break;
+
+					case QRconst::QR_AREA_LSHAPE:
+
 							$symb = array_shift($path);
-							
+
 							$l_shapes[0] = 'm1,0h1v2h-2v-1h1z';
 							$l_shapes[1] = 'h1v1h1v1h-2z';
 							$l_shapes[2] = 'h2v2h-1v-1h-1z';
 							$l_shapes[3] = 'h2v1h-1v1h-1z';
-							
+
 							while(count($path) > 0) {
 								$px = array_shift($path);
 								$py = array_shift($path);
 								$mode = (int)array_shift($path);
-								
+
 								$aggregate_paths[] =  'M'.$px.','.$py.' '.$l_shapes[$mode];
 							}
-								
-						break;	
-						
-					case QR_AREA_TRACKER:
-								
+
+						break;
+
+					case QRconst::QR_AREA_TRACKER:
+
 							if (!isset($lib['tracker'])) {
 								$lib['tracker'] = '<symbol id="tracker"><path d="m 0 7 0 7 7 0 0 -7 -7 0 z m 1 1 5 0 0 5 -5 0 0 -5 z m 1 1 0 3 3 0 0 -3 -3 0 z" style="fill:#000000;stroke:none"></path></symbol>';
 							}
-							
+
 							$symb = array_shift($path);
-							
+
 							$px = array_shift($path);
 							$py = array_shift($path);
-								
+
 							$svg[] = '<use x="'.$px.'" y="'.($py-7).'" xlink:href="#tracker"></use>';
-									
-						break;	
+
+						break;
 				}
 			}
-			
-			$svg[] = '<path d="'.join(' ', $aggregate_paths).'" style="fill:#000000;stroke:none" ></path>';
-							
 
-			
+			$svg[] = '<path d="'.join(' ', $aggregate_paths).'" style="fill:#000000;stroke:none" ></path>';
+
+
+
 			return join("\n", $lib)."\n".join("\n", $svg);
 		}
 	}
- 
+
 	/** @} */
-	
+
 
 
 
@@ -4503,10 +4510,10 @@ if (!defined('QR_AREA')) {
         */
         public function encodeMask(QRinput $input, $mask)
         {
-            if($input->getVersion() < 0 || $input->getVersion() > QRSPEC_VERSION_MAX) {
+            if($input->getVersion() < 0 || $input->getVersion() > QRconst::QRSPEC_VERSION_MAX) {
                 throw new Exception('wrong version');
             }
-            if($input->getErrorCorrectionLevel() > QR_ECLEVEL_H) {
+            if($input->getErrorCorrectionLevel() > QRconst::QR_ECLEVEL_H) {
                 throw new Exception('wrong level');
             }
 
@@ -4553,10 +4560,10 @@ if (!defined('QR_AREA')) {
             $maskObj = new QRmask();
             if($mask < 0) {
 
-                if (QR_FIND_BEST_MASK) {
+                if (QRconst::QR_FIND_BEST_MASK) {
                     $masked = $maskObj->mask($width, $frame, $input->getErrorCorrectionLevel());
                 } else {
-                    $masked = $maskObj->makeMask($width, $frame, (intval(QR_DEFAULT_MASK) % 8), $input->getErrorCorrectionLevel());
+                    $masked = $maskObj->makeMask($width, $frame, (intval(QRconst::QR_DEFAULT_MASK) % 8), $input->getErrorCorrectionLevel());
                 }
             } else {
                 $masked = $maskObj->makeMask($width, $frame, $mask, $input->getErrorCorrectionLevel());
@@ -4606,7 +4613,7 @@ if (!defined('QR_AREA')) {
             $input = new QRinput($version, $level);
             if($input == NULL) return NULL;
 
-            $ret = $input->append(QR_MODE_8, strlen($string), str_split($string));
+            $ret = $input->append(QRconst::QR_MODE_8, strlen($string), str_split($string));
             if($ret < 0) {
                 unset($input);
                 return NULL;
@@ -4633,7 +4640,7 @@ if (!defined('QR_AREA')) {
         public function encodeString($string, $version, $level, $hint, $casesensitive)
         {
 
-            if($hint != QR_MODE_8 && $hint != QR_MODE_KANJI) {
+            if($hint != QRconst::QR_MODE_8 && $hint != QRconst::QR_MODE_KANJI) {
                 throw new Exception('bad hint');
                 return NULL;
             }
@@ -4661,7 +4668,7 @@ if (!defined('QR_AREA')) {
         @param Boolean $saveandprint (optional) if __true__ code is outputed to browser and saved to file, otherwise only saved to file. It is effective only if $outfile is specified.
         */
 
-        public static function png($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint=false)
+        public static function png($text, $outfile = false, $level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint=false)
         {
             $enc = QRencode::factory($level, $size, $margin);
             return $enc->encodePNG($text, $outfile, $saveandprint=false);
@@ -4677,7 +4684,7 @@ if (!defined('QR_AREA')) {
         @param Integer $margin (optional) code margin (silent zone) in 'virtual'  pixels
         @return Base64 string containing QR-Code image in PNG format
         */
-		public static function pngBase64($text, $level = QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint = false)
+		public static function pngBase64($text, $level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint = false)
 		{
 			$enc = QRencode::factory($level, $size, $margin);
 			return $enc->encodePNGbase64($text, $saveandprint);
@@ -4695,7 +4702,7 @@ if (!defined('QR_AREA')) {
         @return Array containing line of code with 1 and 0 for every code line
         */
 
-        public static function text($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4)
+        public static function text($text, $outfile = false, $level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4)
         {
             $enc = QRencode::factory($level, $size, $margin);
             return $enc->encode($text, $outfile);
@@ -4713,7 +4720,7 @@ if (!defined('QR_AREA')) {
         @return Array containing Raw QR code
         */
 
-        public static function raw($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4)
+        public static function raw($text, $outfile = false, $level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4)
         {
             $enc = QRencode::factory($level, $size, $margin);
             return $enc->encodeRAW($text, $outfile);
@@ -4733,7 +4740,7 @@ if (!defined('QR_AREA')) {
         @return String containing JavaScript creating the code, Canvas element (when $elemId is __false__) and script tag with required lib (when $autoInclude is __true__ and not yet included)
         */
 
-        public static function canvas($text, $elemId = false, $level = QR_ECLEVEL_L, $width = false, $size = false, $margin = 4, $autoInclude = false)
+        public static function canvas($text, $elemId = false, $level = QRconst::QR_ECLEVEL_L, $width = false, $size = false, $margin = 4, $autoInclude = false)
         {
             $html = '';
             $extra = '';
@@ -4793,7 +4800,7 @@ if (!defined('QR_AREA')) {
         @return String containing SVG tag
         */
 
-        public static function svg($text, $elemId = false, $outFile = false, $level = QR_ECLEVEL_L, $width = false, $size = false, $margin = 4, $compress = false)
+        public static function svg($text, $elemId = false, $outFile = false, $level = QRconst::QR_ECLEVEL_L, $width = false, $size = false, $margin = 4, $compress = false)
         {
             $enc = QRencode::factory($level, 1, 0);
             $tab_src = $enc->encode($text, false);
@@ -4959,8 +4966,8 @@ if (!defined('QR_AREA')) {
 
         public $structured = 0;       ///< Structured QR codes. Not supported.
 
-        public $level = QR_ECLEVEL_L; ///< __Integer__ error correction level __QR_ECLEVEL_L__, __QR_ECLEVEL_M__, __QR_ECLEVEL_Q__ or __QR_ECLEVEL_H__
-        public $hint = QR_MODE_8;     ///< __Integer__ encoding hint, __QR_MODE_8__ or __QR_MODE_KANJI__, Because Kanji encoding is kind of 8 bit encoding we need to hint encoder to use Kanji mode explicite. (otherwise it may try to encode it as plain 8 bit stream)
+        public $level = QRconst::QR_ECLEVEL_L; ///< __Integer__ error correction level __QR_ECLEVEL_L__, __QR_ECLEVEL_M__, __QR_ECLEVEL_Q__ or __QR_ECLEVEL_H__
+        public $hint = QRconst::QR_MODE_8;     ///< __Integer__ encoding hint, __QR_MODE_8__ or __QR_MODE_KANJI__, Because Kanji encoding is kind of 8 bit encoding we need to hint encoder to use Kanji mode explicite. (otherwise it may try to encode it as plain 8 bit stream)
 
         //----------------------------------------------------------------------
         /** Encoder instances factory.
@@ -4969,7 +4976,7 @@ if (!defined('QR_AREA')) {
         @param Integer $margin margin (silent zone) size, in code pixels
         @return builded QRencode instance
         */
-        public static function factory($level = QR_ECLEVEL_L, $size = 3, $margin = 4)
+        public static function factory($level = QRconst::QR_ECLEVEL_L, $size = 3, $margin = 4)
         {
             $enc = new QRencode();
             $enc->size = $size;
@@ -4984,19 +4991,19 @@ if (!defined('QR_AREA')) {
                     break;
                 case 'l':
                 case 'L':
-                        $enc->level = QR_ECLEVEL_L;
+                        $enc->level = QRconst::QR_ECLEVEL_L;
                     break;
                 case 'm':
                 case 'M':
-                        $enc->level = QR_ECLEVEL_M;
+                        $enc->level = QRconst::QR_ECLEVEL_M;
                     break;
                 case 'q':
                 case 'Q':
-                        $enc->level = QR_ECLEVEL_Q;
+                        $enc->level = QRconst::QR_ECLEVEL_Q;
                     break;
                 case 'h':
                 case 'H':
-                        $enc->level = QR_ECLEVEL_H;
+                        $enc->level = QRconst::QR_ECLEVEL_H;
                     break;
             }
 
@@ -5066,7 +5073,7 @@ if (!defined('QR_AREA')) {
                 if ($err != '')
                     QRtools::log($outfile, $err);
 
-                $maxSize = (int)(QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
+                $maxSize = (int)(QRconst::QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
 
                 QRimage::png($tab, $outfile, min(max(1, $this->size), $maxSize), $this->margin,$saveandprint);
 
@@ -5092,7 +5099,7 @@ if (!defined('QR_AREA')) {
 				ob_end_clean();
 				if ($err != '')
 					QRtools::log($intext, $err);
-				$maxSize = (int)(QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
+				$maxSize = (int)(QRconst::QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
 				return QRimage::pngBase64($tab, min(max(1, $this->size), $maxSize), $this->margin, $saveandprint);
 			} catch (Exception $e) {
 				QRtools::log($intext, $e->getMessage());

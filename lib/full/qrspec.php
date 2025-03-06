@@ -31,21 +31,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-if (!defined('QR_SPEC')) {
-	define('QR_SPEC', true);
-
-    /** Maximal Version no allowed by QR-Code spec */
-    define('QRSPEC_VERSION_MAX', 40);
-    /** Maximal Code size in pixels allowed by QR-Code spec */
-    define('QRSPEC_WIDTH_MAX',   177);
-
-    define('QRCAP_WIDTH',        0);
-    define('QRCAP_WORDS',        1);
-    define('QRCAP_REMINDER',     2);
-    define('QRCAP_EC',           3);
-
-}
-
     /** @addtogroup CoreGroup */
     /** @{ */
 
@@ -117,7 +102,7 @@ if (!defined('QR_SPEC')) {
         */
         public static function getDataLength($version, $level)
         {
-            return self::$capacity[$version][QRCAP_WORDS] - self::$capacity[$version][QRCAP_EC][$level];
+            return self::$capacity[$version][QRconst::QRCAP_WORDS] - self::$capacity[$version][QRconst::QRCAP_EC][$level];
         }
 
         //----------------------------------------------------------------------
@@ -128,7 +113,7 @@ if (!defined('QR_SPEC')) {
         */
         public static function getECCLength($version, $level)
         {
-            return self::$capacity[$version][QRCAP_EC][$level];
+            return self::$capacity[$version][QRconst::QRCAP_EC][$level];
         }
 
         //----------------------------------------------------------------------
@@ -138,7 +123,7 @@ if (!defined('QR_SPEC')) {
         */
         public static function getWidth($version)
         {
-            return self::$capacity[$version][QRCAP_WIDTH];
+            return self::$capacity[$version][QRconst::QRCAP_WIDTH];
         }
 
         //----------------------------------------------------------------------
@@ -148,7 +133,7 @@ if (!defined('QR_SPEC')) {
         */
         public static function getRemainder($version)
         {
-            return self::$capacity[$version][QRCAP_REMINDER];
+            return self::$capacity[$version][QRconst::QRCAP_REMINDER];
         }
 
         //----------------------------------------------------------------------
@@ -160,8 +145,8 @@ if (!defined('QR_SPEC')) {
         public static function getMinimumVersion($size, $level)
         {
 
-            for($i=1; $i<= QRSPEC_VERSION_MAX; $i++) {
-                $words  = self::$capacity[$i][QRCAP_WORDS] - self::$capacity[$i][QRCAP_EC][$level];
+            for($i=1; $i<= QRconst::QRSPEC_VERSION_MAX; $i++) {
+                $words  = self::$capacity[$i][QRconst::QRCAP_WORDS] - self::$capacity[$i][QRconst::QRCAP_EC][$level];
                 if($words >= $size)
                     return $i;
             }
@@ -184,7 +169,7 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function lengthIndicator($mode, $version)
         {
-            if ($mode == QR_MODE_STRUCTURE)
+            if ($mode == QRconst::QR_MODE_STRUCTURE)
                 return 0;
 
             if ($version <= 9) {
@@ -201,7 +186,7 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function maximumWords($mode, $version)
         {
-            if($mode == QR_MODE_STRUCTURE)
+            if($mode == QRconst::QR_MODE_STRUCTURE)
                 return 3;
 
             if($version <= 9) {
@@ -215,7 +200,7 @@ if (!defined('QR_SPEC')) {
             $bits = self::$lengthTableBits[$mode][$l];
             $words = (1 << $bits) - 1;
 
-            if($mode == QR_MODE_KANJI) {
+            if($mode == QRconst::QR_MODE_KANJI) {
                 $words *= 2; // the number of bytes is required
             }
 
@@ -404,7 +389,7 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function getVersionPattern($version)
         {
-            if($version < 7 || $version > QRSPEC_VERSION_MAX)
+            if($version < 7 || $version > QRconst::QRSPEC_VERSION_MAX)
                 return 0;
 
             return self::$versionPattern[$version -7];
@@ -465,7 +450,7 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function createFrame($version)
         {
-            $width = self::$capacity[$version][QRCAP_WIDTH];
+            $width = self::$capacity[$version][QRconst::QRCAP_WIDTH];
             $frameLine = str_repeat ("\0", $width);
             $frame = array_fill(0, $width, $frameLine);
 
@@ -635,14 +620,14 @@ if (!defined('QR_SPEC')) {
         //----------------------------------------------------------------------
         public static function newFrame($version)
         {
-            if($version < 1 || $version > QRSPEC_VERSION_MAX)
+            if($version < 1 || $version > QRconst::QRSPEC_VERSION_MAX)
                 return null;
 
             if(!isset(self::$frames[$version])) {
 
-                $fileName = QR_CACHE_DIR.'frame_'.$version.'.dat';
+                $fileName = QRconst::QR_CACHE_DIR.'frame_'.$version.'.dat';
 
-                if (QR_CACHEABLE) {
+                if (QRconst::QR_CACHEABLE) {
                     if (file_exists($fileName)) {
                         self::$frames[$version] = self::unserial(file_get_contents($fileName));
                     } else {
