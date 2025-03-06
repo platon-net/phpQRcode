@@ -13,7 +13,7 @@
  * The following data / specifications are taken from
  * "Two dimensional symbol -- QR-code -- Basic Specification" (JIS X0510:2004)
  *  or
- * "Automatic identification and data capture techniques -- 
+ * "Automatic identification and data capture techniques --
  *  QR Code 2005 bar code symbology specification" (ISO/IEC 18004:2006)
  *
  * This library is free software; you can redistribute it and/or
@@ -30,7 +30,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
- 
+
+if (!defined('QR_SPEC')) {
+	define('QR_SPEC', true);
+
     /** Maximal Version no allowed by QR-Code spec */
     define('QRSPEC_VERSION_MAX', 40);
     /** Maximal Code size in pixels allowed by QR-Code spec */
@@ -40,26 +43,28 @@
     define('QRCAP_WORDS',        1);
     define('QRCAP_REMINDER',     2);
     define('QRCAP_EC',           3);
-    
+
+}
+
     /** @addtogroup CoreGroup */
     /** @{ */
 
     /** QR-Code specification and Code Frame handling.
-    Contains code specifications, calculates base frame, code structure 
+    Contains code specifications, calculates base frame, code structure
     and base properties
     */
     class QRspec {
-    
-        /** Array specifying properties of QR-Code "versions". 
-        Each so-called version has specified code area size and capacity. 
+
+        /** Array specifying properties of QR-Code "versions".
+        Each so-called version has specified code area size and capacity.
         There are 40 versions, this table specifies for each of them four parameters:
-        
+
         - Integer __QRCAP_WIDTH__ - size of code in pixels
         - Integer __QRCAP_WORDS__ - code capacity, in words
         - Integer __QRCAP_REMINDER__ - remainder words
         - Array of Integers __QRCAP_EC__ - RS correction code count for each of four ECC levels
         \hideinitializer
-        */  
+        */
         public static $capacity = array(
             array(  0,    0, 0, array(   0,    0,    0,    0)),
             array( 21,   26, 0, array(   7,   10,   13,   17)), // 1
@@ -103,7 +108,7 @@
             array(173, 3532, 0, array( 720, 1316, 1950, 2310)),
             array(177, 3706, 0, array( 750, 1372, 2040, 2430)) //40
         );
-        
+
         //----------------------------------------------------------------------
         /** Calculates data length for specified code configuration.
         @param Integer $version Code version
@@ -114,7 +119,7 @@
         {
             return self::$capacity[$version][QRCAP_WORDS] - self::$capacity[$version][QRCAP_EC][$level];
         }
-        
+
         //----------------------------------------------------------------------
         /** Calculates count of Error Correction Codes for specified code configuration.
         @param Integer $version Code version
@@ -125,7 +130,7 @@
         {
             return self::$capacity[$version][QRCAP_EC][$level];
         }
-        
+
         //----------------------------------------------------------------------
         /** Gets pixel width of code.
         @param Integer $version Code version
@@ -135,7 +140,7 @@
         {
             return self::$capacity[$version][QRCAP_WIDTH];
         }
-        
+
         //----------------------------------------------------------------------
         /** Gets reminder chars length.
         @param Integer $version Code version
@@ -145,7 +150,7 @@
         {
             return self::$capacity[$version][QRCAP_REMINDER];
         }
-        
+
         //----------------------------------------------------------------------
         /** Finds minimal code version capable of hosting specified data length.
         @param Integer $size amount of raw data
@@ -157,13 +162,13 @@
 
             for($i=1; $i<= QRSPEC_VERSION_MAX; $i++) {
                 $words  = self::$capacity[$i][QRCAP_WORDS] - self::$capacity[$i][QRCAP_EC][$level];
-                if($words >= $size) 
+                if($words >= $size)
                     return $i;
             }
 
             return -1;
         }
-    
+
         //######################################################################
 
         /** Length bits Table.
@@ -175,13 +180,13 @@
             array( 8, 16, 16),
             array( 8, 10, 12)
         );
-        
+
         //----------------------------------------------------------------------
         public static function lengthIndicator($mode, $version)
         {
             if ($mode == QR_MODE_STRUCTURE)
                 return 0;
-                
+
             if ($version <= 9) {
                 $l = 0;
             } else if ($version <= 26) {
@@ -192,13 +197,13 @@
 
             return self::$lengthTableBits[$mode][$l];
         }
-        
+
         //----------------------------------------------------------------------
         public static function maximumWords($mode, $version)
         {
-            if($mode == QR_MODE_STRUCTURE) 
+            if($mode == QR_MODE_STRUCTURE)
                 return 3;
-                
+
             if($version <= 9) {
                 $l = 0;
             } else if($version <= 26) {
@@ -209,7 +214,7 @@
 
             $bits = self::$lengthTableBits[$mode][$l];
             $words = (1 << $bits) - 1;
-            
+
             if($mode == QR_MODE_KANJI) {
                 $words *= 2; // the number of bytes is required
             }
@@ -265,11 +270,11 @@
             array(array( 4, 18), array(13, 32), array(48, 14), array(42, 32)),
             array(array(20,  4), array(40,  7), array(43, 22), array(10, 67)),
             array(array(19,  6), array(18, 31), array(34, 34), array(20, 61)),//40
-        );                                                                       
+        );
 
         //----------------------------------------------------------------------
         // CACHEABLE!!!
-        
+
         public static function getEccSpec($version, $level, array &$spec)
         {
             if (count($spec) < 5) {
@@ -285,7 +290,7 @@
                 $spec[0] = $b1;
                 $spec[1] = (int)($data / $b1);
                 $spec[2] = (int)($ecc / $b1);
-                $spec[3] = 0; 
+                $spec[3] = 0;
                 $spec[4] = 0;
             } else {
                 $spec[0] = $b1;
@@ -299,15 +304,15 @@
         // Alignment pattern ---------------------------------------------------
 
         /** Positions of alignment patterns.
-        This array includes only the second and the third position of the 
-        lignment patterns. Rest of them can be calculated from the distance 
+        This array includes only the second and the third position of the
+        lignment patterns. Rest of them can be calculated from the distance
         between them.
-         
+
         @see Table 1 in Appendix E (pp.71) of JIS X0510:2004.
         \hideinitializer
         */
-         
-        public static $alignmentPattern = array(      
+
+        public static $alignmentPattern = array(
             array( 0,  0),
             array( 0,  0), array(18,  0), array(22,  0), array(26,  0), array(30,  0), // 1- 5
             array(34,  0), array(22, 38), array(24, 42), array(26, 46), array(28, 50), // 6-10
@@ -317,7 +322,7 @@
             array(30, 58), array(34, 62), array(26, 50), array(30, 54), array(26, 52), //26-30
             array(30, 56), array(34, 60), array(30, 58), array(34, 62), array(30, 54), //31-35
             array(24, 50), array(28, 54), array(32, 58), array(26, 54), array(30, 58), //35-40
-        );                                                                                  
+        );
 
         //----------------------------------------------------------------------
         /** Puts an alignment marker.
@@ -333,11 +338,11 @@
                 "\xa1\xa0\xa1\xa0\xa1",
                 "\xa1\xa0\xa0\xa0\xa1",
                 "\xa1\xa1\xa1\xa1\xa1"
-            );                        
-            
-            $yStart = $oy-2;         
+            );
+
+            $yStart = $oy-2;
             $xStart = $ox-2;
-            
+
             for($y=0; $y<5; $y++) {
                 self::set($frame, $xStart, $yStart+$y, $finder[$y]);
             }
@@ -387,7 +392,7 @@
         @see Table 1 in Appendix D (pp.68) of JIS X0510:2004.
         \hideinitializer
         */
-        
+
         public static $versionPattern = array(
             0x07c94, 0x085bc, 0x09a99, 0x0a4d3, 0x0bbf6, 0x0c762, 0x0d847, 0x0e60d,
             0x0f928, 0x10b78, 0x1145d, 0x12a17, 0x13532, 0x149a6, 0x15683, 0x168c9,
@@ -410,7 +415,7 @@
         @see calcFormatInfo in tests/test_qrspec.c (orginal qrencode c lib)
         \hideinitializer
         */
-        
+
         public static $formatInfo = array(
             array(0x77c4, 0x72f3, 0x7daa, 0x789d, 0x662f, 0x6318, 0x6c41, 0x6976),
             array(0x5412, 0x5125, 0x5e7c, 0x5b4b, 0x45f9, 0x40ce, 0x4f97, 0x4aa0),
@@ -422,15 +427,15 @@
         {
             if($mask < 0 || $mask > 7)
                 return 0;
-                
+
             if($level < 0 || $level > 3)
-                return 0;                
+                return 0;
 
             return self::$formatInfo[$level][$mask];
         }
 
         // Frame ---------------------------------------------------------------
-        
+
         /** Cache of initial frames. */
         public static $frames = array();
 
@@ -450,8 +455,8 @@
                 "\xc1\xc0\xc1\xc1\xc1\xc0\xc1",
                 "\xc1\xc0\xc0\xc0\xc0\xc0\xc1",
                 "\xc1\xc1\xc1\xc1\xc1\xc1\xc1"
-            );                            
-            
+            );
+
             for($y=0; $y<7; $y++) {
                 self::set($frame, $ox, $oy+$y, $finder[$y]);
             }
@@ -468,28 +473,28 @@
             self::putFinderPattern($frame, 0, 0);
             self::putFinderPattern($frame, $width - 7, 0);
             self::putFinderPattern($frame, 0, $width - 7);
-            
+
             // Separator
             $yOffset = $width - 7;
-            
+
             for($y=0; $y<7; $y++) {
                 $frame[$y][7] = "\xc0";
                 $frame[$y][$width - 8] = "\xc0";
                 $frame[$yOffset][7] = "\xc0";
                 $yOffset++;
             }
-            
+
             $setPattern = str_repeat("\xc0", 8);
-            
+
             self::set($frame, 0, 7, $setPattern);
             self::set($frame, $width-8, 7, $setPattern);
             self::set($frame, 0, $width - 8, $setPattern);
-        
+
             // Format info
             $setPattern = str_repeat("\x84", 9);
             self::set($frame, 0, 8, $setPattern);
             self::set($frame, $width - 8, 8, $setPattern, 8);
-            
+
             $yOffset = $width - 8;
 
             for($y=0; $y<8; $y++,$yOffset++) {
@@ -497,22 +502,22 @@
                 $frame[$yOffset][8] = "\x84";
             }
 
-            // Timing pattern  
-            
+            // Timing pattern
+
             for($i=1; $i<$width-15; $i++) {
                 $frame[6][7+$i] = chr(0x90 | ($i & 1));
                 $frame[7+$i][6] = chr(0x90 | ($i & 1));
             }
-            
-            // Alignment pattern  
+
+            // Alignment pattern
             self::putAlignmentPattern($version, $frame, $width);
-            
-            // Version information 
+
+            // Version information
             if($version >= 7) {
                 $vinf = self::getVersionPattern($version);
 
                 $v = $vinf;
-                
+
                 for($x=0; $x<6; $x++) {
                     for($y=0; $y<3; $y++) {
                         $frame[($width - 11)+$y][$x] = chr(0x88 | ($v & 1));
@@ -528,10 +533,10 @@
                     }
                 }
             }
-    
-            // and a little bit...  
+
+            // and a little bit...
             $frame[$width - 8][8] = "\x81";
-            
+
             return $frame;
         }
 
@@ -543,23 +548,23 @@
         public static function debug($frame, $binary_mode = false)
         {
             if ($binary_mode) {
-            
+
                     foreach ($frame as &$frameLine) {
                         $frameLine = join('<span class="m">&nbsp;&nbsp;</span>', explode('0', $frameLine));
                         $frameLine = join('&#9608;&#9608;', explode('1', $frameLine));
                     }
-                    
+
                     echo '<style> .m { background-color: white; } </style> ';
                     echo '<pre><tt><br/ ><br/ ><br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
                     echo join("<br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $frame);
                     echo '</tt></pre><br/ ><br/ ><br/ ><br/ ><br/ ><br/ >';
-            
+
             } else {
-            
+
                 foreach ($frame as &$frameLine) {
-                
+
                     $frameLine = strtr($frameLine, array(
-                        "\xc0" => '<span class="m">&nbsp;</span>',   //marker 0    
+                        "\xc0" => '<span class="m">&nbsp;</span>',   //marker 0
                         "\xc1" => '<span class="m">&#9618;</span>',  //marker 1
                         "\xa0" => '<span class="p">&nbsp;</span>',   //submarker 0
                         "\xa1" => '<span class="p">&#9618;</span>',  //submarker 1
@@ -568,13 +573,13 @@
                         "\x81" => '<span class="x">S</span>',        //special bit
                         "\x90" => '<span class="c">C</span>',        //clock 0
                         "\x91" => '<span class="c">c</span>',        //clock 1
-                        "\x88" => '<span class="f">&nbsp;</span>',   //version 0 
+                        "\x88" => '<span class="f">&nbsp;</span>',   //version 0
                         "\x89" => '<span class="f">&#9618;</span>',  //version 1
                         "\x03" => '1',                               // 1
-                        "\x02" => '0',                               // 0         
-                    ));                                          
-                }                
-               
+                        "\x02" => '0',                               // 0
+                    ));
+                }
+
                 echo '<style>';
                 echo '    .p { background-color: yellow; }';
                 echo '    .m { background-color: #00FF00; }';
@@ -583,25 +588,25 @@
                 echo '    .x { background-color: pink; }';
                 echo '    .f { background-color: gold; }';
                 echo '</style>';
-               
+
                 echo "<tt>";
                 echo join("<br/ >", $frame);
                 echo "<br/>Legend:<br/>";
-                echo '1 - data 1<br/>';                          
-                echo '0 - data 0<br/>';  
-                echo '<span class="m">&nbsp;</span> - marker bit 0<br/>'; 
-                echo '<span class="m">&#9618;</span> - marker bit 1<br/>';  
-                echo '<span class="p">&nbsp;</span> - secondary marker bit 0<br/>';   
-                echo '<span class="p">&#9618;</span> - secondary marker bit 1<br/>';  
-                echo '<span class="s">F</span> - format bit 0<br/>';        
-                echo '<span class="s">f</span> - format bit 1<br/>';        
-                echo '<span class="x">S</span> - special bit<br/>';        
-                echo '<span class="c">C</span> - clock bit 0<br/>';        
-                echo '<span class="c">c</span> - clock bit 1<br/>';        
-                echo '<span class="f">&nbsp;</span> - version bit 0<br/>'; 
+                echo '1 - data 1<br/>';
+                echo '0 - data 0<br/>';
+                echo '<span class="m">&nbsp;</span> - marker bit 0<br/>';
+                echo '<span class="m">&#9618;</span> - marker bit 1<br/>';
+                echo '<span class="p">&nbsp;</span> - secondary marker bit 0<br/>';
+                echo '<span class="p">&#9618;</span> - secondary marker bit 1<br/>';
+                echo '<span class="s">F</span> - format bit 0<br/>';
+                echo '<span class="s">f</span> - format bit 1<br/>';
+                echo '<span class="x">S</span> - special bit<br/>';
+                echo '<span class="c">C</span> - clock bit 0<br/>';
+                echo '<span class="c">c</span> - clock bit 1<br/>';
+                echo '<span class="f">&nbsp;</span> - version bit 0<br/>';
                 echo '<span class="f">&#9618;</span> - version bit 1<br/>';
                 echo "</tt>";
-            
+
             }
         }
 
@@ -615,7 +620,7 @@
         {
             return gzcompress(join("\n", $frame), 9);
         }
-        
+
         //----------------------------------------------------------------------
         /** Deserializes frame.
         Loads frame from serialized compressed binary
@@ -626,17 +631,17 @@
         {
             return explode("\n", gzuncompress($code));
         }
-        
+
         //----------------------------------------------------------------------
         public static function newFrame($version)
         {
-            if($version < 1 || $version > QRSPEC_VERSION_MAX) 
+            if($version < 1 || $version > QRSPEC_VERSION_MAX)
                 return null;
 
             if(!isset(self::$frames[$version])) {
-                
+
                 $fileName = QR_CACHE_DIR.'frame_'.$version.'.dat';
-                
+
                 if (QR_CACHEABLE) {
                     if (file_exists($fileName)) {
                         self::$frames[$version] = self::unserial(file_get_contents($fileName));
@@ -648,7 +653,7 @@
                     self::$frames[$version] = self::createFrame($version);
                 }
             }
-            
+
             if(is_null(self::$frames[$version]))
                 return null;
 
@@ -666,9 +671,9 @@
         public static function set(&$frame, $x, $y, $repl, $replLen = false) {
             $frame[$y] = substr_replace($frame[$y], ($replLen !== false)?substr($repl,0,$replLen):$repl, $x, ($replLen !== false)?$replLen:strlen($repl));
         }
-        
+
         //----------------------------------------------------------------------
-        
+
         /** @name Reed-Solomon related shorthand getters.
         Syntax-sugar to access code speciffication by getter name, not by spec array field.
         */
@@ -684,7 +689,7 @@
         public static function rsEccLength($spec)    { return ($spec[0] + $spec[3]) * $spec[2]; }
         /** @}*/
     }
-    
+
     /** @}*/
-    
+
 ?>

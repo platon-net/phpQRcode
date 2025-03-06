@@ -1,5 +1,7 @@
 <?php
 
+namespace PlatonNET;
+
 /*
  * PHP QR Code encoder
  *
@@ -25,50 +27,58 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
- 
+
+// definitions
+if (!defined('QR_CONST')) {
+
+	/**
+	 * Indicate that definitions for this class are set
+	 */
+	define('QR_CONST', true);
 
     /** \defgroup QR_CONST Global Constants
     Constant used globally for function arguments.
     Make PHP calls a little bit more clear, in place of missing (in dynamicaly typed language) enum types.
-    * @{ 
+    * @{
     */
-     
+
     /** @name QR-Code Encoding Modes */
     /** @{ */
-    
+
     /** null encoding, used when no encoding was speciffied yet */
-    define('QR_MODE_NUL', -1);   
-    /** Numerical encoding, only numbers (0-9) */	
-    define('QR_MODE_NUM', 0);   
-    /** AlphaNumerical encoding, numbers (0-9) uppercase text (A-Z) and few special characters (space, $, %, *, +, -, ., /, :) */    
-    define('QR_MODE_AN', 1);  
+    define('QR_MODE_NUL', -1);
+    /** Numerical encoding, only numbers (0-9) */
+    define('QR_MODE_NUM', 0);
+    /** AlphaNumerical encoding, numbers (0-9) uppercase text (A-Z) and few special characters (space, $, %, *, +, -, ., /, :) */
+    define('QR_MODE_AN', 1);
     /** 8-bit encoding, raw 8 bit encoding */
-    define('QR_MODE_8', 2);    
-    /** Kanji encoding */	
-    define('QR_MODE_KANJI', 3);    
-    /** Structure, internal encoding for structure-related data */	
-    define('QR_MODE_STRUCTURE', 4); 
+    define('QR_MODE_8', 2);
+    /** Kanji encoding */
+    define('QR_MODE_KANJI', 3);
+    /** Structure, internal encoding for structure-related data */
+    define('QR_MODE_STRUCTURE', 4);
     /**@}*/
 
-    /** @name QR-Code Levels of Error Correction 
-    Constants speciffy ECC level from lowest __L__ to the highest __H__. 
+    /** @name QR-Code Levels of Error Correction
+    Constants speciffy ECC level from lowest __L__ to the highest __H__.
     Higher levels are recomended for Outdoor-presented codes, but generates bigger codes.
     */
     /** @{*/
 	/** ~7% of codewords can be restored */
-    define('QR_ECLEVEL_L', 0); 
+    define('QR_ECLEVEL_L', 0);
 	/** ~15% of codewords can be restored */
-    define('QR_ECLEVEL_M', 1); 
+    define('QR_ECLEVEL_M', 1);
 	/** ~25% of codewords can be restored */
     define('QR_ECLEVEL_Q', 2);
 	/** ~30% of codewords can be restored */
     define('QR_ECLEVEL_H', 3);
     /** @}*/
-   
+
     /** @name QR-Code Supported output formats */
     /** @{*/
     define('QR_FORMAT_TEXT', 0);
     define('QR_FORMAT_PNG',  1);
     /** @}*/
-    
+
     /** @}*/
+}
